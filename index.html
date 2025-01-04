@@ -38,7 +38,7 @@
 
   <script>
     // Recipe directory
-    const recipesDir = "../recipes/";
+    const recipesDir = "recipes/";
 
     // Recipe data
     const recipes = [
@@ -73,7 +73,7 @@
       link.href = `${recipesDir}${recipe.file}`;
 
       const img = document.createElement("img");
-      img.src = `${recipesDir}${recipe.image}`;
+      img.src = recipe.image;
       img.alt = recipe.name;
 
       const title = document.createElement("div");
