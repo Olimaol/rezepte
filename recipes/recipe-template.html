@@ -70,7 +70,7 @@
 
             document.getElementById('recipe-title').textContent = recipe.title;
             document.getElementById('recipe-name').textContent = recipe.title;
-            document.getElementById('recipe-image').src = recipe.image;
+            document.getElementById('recipe-image').src = `../images/${recipe.image}`;
 
             const ingredientsList = document.getElementById('recipe-ingredients');
             recipe.ingredients.forEach(ingredient => {

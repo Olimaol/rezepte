@@ -40,6 +40,9 @@
     // Recipe directory
     const recipesDir = "recipes/";
 
+    // Image directory
+    const imagesDir = "images/";
+
     // Load recipes from JSON file
     async function loadRecipes() {
       const response = await fetch(`${recipesDir}recipes.json`);
@@ -52,7 +55,7 @@
         card.href = `${recipesDir}recipe-template.html?recipe=${index}`;
 
         const img = document.createElement("img");
-        img.src = recipe.image;
+        img.src = `${imagesDir}${recipe.image}`;
         img.alt = recipe.title;
 
         const titleDiv = document.createElement("div");

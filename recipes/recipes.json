@@ -1,7 +1,7 @@
 [
   {
     "title": "One Pot Pasta mit Blattspinat",
-    "image": "../images/image.png",
+    "image": "image.png",
     "ingredients": [
       "250 g Nudeln",
       "200 g Blattspinat (TK)",
@@ -21,7 +21,7 @@
   },
   {
     "title": "Another Recipe",
-    "image": "../images/image.png",
+    "image": "image.png",
     "ingredients": [
       "Ingredient 1",
       "Ingredient 2"
