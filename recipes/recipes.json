@@ -1,0 +1,34 @@
+[
+  {
+    "title": "One Pot Pasta mit Blattspinat",
+    "image": "../images/image.png",
+    "ingredients": [
+      "250 g Nudeln",
+      "200 g Blattspinat (TK)",
+      "200 ml Sahne",
+      "350 ml Gemüsebrühe",
+      "Kräuter",
+      "1 Zwiebel",
+      "1 Knoblauch",
+      "Parmesan"
+    ],
+    "instructions": [
+      "Zwiebelwürfel und dann Knoblauch anbraten.",
+      "Spinat, Nudeln, Gemüsebrühe und Sahne hinzufügen.",
+      "Köcheln bis Nudeln gar sind.",
+      "Parmesan hinzufügen."
+    ]
+  },
+  {
+    "title": "Another Recipe",
+    "image": "../images/image.png",
+    "ingredients": [
+      "Ingredient 1",
+      "Ingredient 2"
+    ],
+    "instructions": [
+      "Step 1",
+      "Step 2"
+    ]
+  }
+]

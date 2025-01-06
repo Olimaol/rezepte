@@ -40,69 +40,30 @@
     // Recipe directory
     const recipesDir = "recipes/";
 
-    // Recipe data
-    const recipes = [
-      "recipe1.html",
-      "recipe2.html",
-      "recipe3.html",
-      "recipe4.html"
-    ];
-
-    const recipeList = document.getElementById("recipe-list");
-
-    // Function to extract metadata from a recipe HTML file
-    async function extractRecipeData(file) {
-      try {
-        const response = await fetch(`${recipesDir}${file}`);
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.statusText}`);
-        }
-        const text = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(text, "text/html");
-
-        const title = doc.querySelector("h1[itemprop='name']").textContent;
-        const image = doc.querySelector("img[itemprop='image']").getAttribute("src");
-        const imagePath = `${recipesDir}${image}`;
-
-        return { title, imagePath, file };
-      } catch (error) {
-        console.error(`Failed to fetch recipe data for ${file}:`, error);
-        return null;
-      }
-    }
-
-    // Function to create a recipe card
-    function createRecipeCard({ title, imagePath, file }) {
-      const card = document.createElement("div");
-      card.className = "w3-card w3-white w3-round recipe-card";
-
-      const img = document.createElement("img");
-      img.src = imagePath;
-      img.alt = title;
-
-      const titleDiv = document.createElement("div");
-      titleDiv.className = "w3-container w3-center w3-padding";
-      titleDiv.innerHTML = `<h3>${title}</h3>`;
-
-      const link = document.createElement("a");
-      link.href = `${recipesDir}${file}`;
-      link.appendChild(img);
-
-      card.appendChild(link);
-      card.appendChild(titleDiv);
-
-      recipeList.appendChild(card);
-    }
-
-    // Load all recipes dynamically
+    // Load recipes from JSON file
     async function loadRecipes() {
-      for (const file of recipes) {
-        const recipeData = await extractRecipeData(file);
-        if (recipeData) {
-          createRecipeCard(recipeData);
-        }
-      }
+      const response = await fetch(`${recipesDir}recipes.json`);
+      const recipes = await response.json();
+      const recipeList = document.getElementById("recipe-list");
+
+      recipes.forEach((recipe, index) => {
+        const card = document.createElement("a");
+        card.className = "w3-card w3-white w3-round recipe-card";
+        card.href = `${recipesDir}recipe-template.html?recipe=${index}`;
+
+        const img = document.createElement("img");
+        img.src = recipe.image;
+        img.alt = recipe.title;
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "w3-container w3-center w3-padding";
+        titleDiv.innerHTML = `<h3>${recipe.title}</h3>`;
+
+        card.appendChild(img);
+        card.appendChild(titleDiv);
+
+        recipeList.appendChild(card);
+      });
     }
 
     loadRecipes();

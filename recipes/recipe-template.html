@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../w3.css">
+    <title id="recipe-title">Recipe Title</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+    <div itemtype="http://schema.org/Recipe">
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 id="recipe-name" itemprop="name">Recipe Name</h1>
+                <img id="recipe-image" itemprop="image" src="" alt="Recipe Image" class="recipe-image">
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul id="recipe-ingredients" class="ingredients">
+                    <!-- Ingredients will be inserted here dynamically -->
+                </ul>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol id="recipe-instructions" itemprop="recipeInstructions">
+                    <!-- Instructions will be inserted here dynamically -->
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadRecipe() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeIndex = urlParams.get('recipe');
+            const response = await fetch('recipes.json');
+            const recipes = await response.json();
+            const recipe = recipes[recipeIndex];
+
+            document.getElementById('recipe-title').textContent = recipe.title;
+            document.getElementById('recipe-name').textContent = recipe.title;
+            document.getElementById('recipe-image').src = recipe.image;
+
+            const ingredientsList = document.getElementById('recipe-ingredients');
+            recipe.ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.textContent = ingredient;
+                li.setAttribute('itemprop', 'recipeIngredient');
+                ingredientsList.appendChild(li);
+            });
+
+            const instructionsList = document.getElementById('recipe-instructions');
+            recipe.instructions.forEach(instruction => {
+                const li = document.createElement('li');
+                li.textContent = instruction;
+                instructionsList.appendChild(li);
+            });
+        }
+
+        loadRecipe();
+    </script>
+</body>
+</html>
