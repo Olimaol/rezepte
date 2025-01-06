@@ -23,14 +23,34 @@
       justify-content: center;
       padding: 20px;
     }
+    .search-container {
+      text-align: center;
+      margin: 20px;
+    }
+    .search-input {
+      padding: 10px;
+      width: 80%;
+      max-width: 400px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body class="w3-light-grey">
+
+  <!-- Navbar -->
+  <div class="w3-bar w3-teal">
+    <a href="index.html" class="w3-bar-item w3-button">Home</a>
+  </div>
 
   <header class="w3-container w3-teal w3-center w3-padding-32">
     <h1>Rezeptsammlung</h1>
     <p>von Oliver</p>
   </header>
+
+  <!-- Search Field -->
+  <div class="search-container">
+    <input type="text" id="search-input" class="search-input" placeholder="Filter...">
+  </div>
 
   <div class="recipe-container" id="recipe-list">
     <!-- Recipe cards will be inserted here dynamically -->
@@ -53,6 +73,8 @@
         const card = document.createElement("a");
         card.className = "w3-card w3-white w3-round recipe-card";
         card.href = `${recipesDir}recipe-template.html?recipe=${index}`;
+        card.dataset.title = recipe.title.toLowerCase();
+        card.dataset.ingredients = recipe.ingredients.join(" ").toLowerCase();
 
         const img = document.createElement("img");
         img.src = `${imagesDir}${recipe.image}`;
@@ -68,6 +90,24 @@
         recipeList.appendChild(card);
       });
     }
+
+    // Filter recipes based on search input
+    function filterRecipes() {
+      const searchInput = document.getElementById("search-input").value.toLowerCase();
+      const recipeCards = document.querySelectorAll(".recipe-card");
+
+      recipeCards.forEach(card => {
+        const title = card.dataset.title;
+        const ingredients = card.dataset.ingredients;
+        if (title.includes(searchInput) || ingredients.includes(searchInput)) {
+          card.style.display = "inline-block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    }
+
+    document.getElementById("search-input").addEventListener("input", filterRecipes);
 
     loadRecipes();
   </script>
