@@ -42,48 +42,70 @@
 
     // Recipe data
     const recipes = [
-      { name: "Spaghetti Bolognese", image: "images/image.png", file: "recipe1.html" },
-      { name: "Caesar Salad", image: "images/image.png", file: "recipe2.html" },
-      { name: "Chocolate Cake", image: "images/image.png", file: "recipe3.html" },
-      { name: "Pancakes", image: "images/image.png", file: "recipe4.html" },
-      { name: "Chicken Curry", image: "images/image.png", file: "recipe5.html" },
-      { name: "Beef Stew", image: "images/image.png", file: "recipe6.html" },
-      { name: "Fish Tacos", image: "images/image.png", file: "recipe7.html" },
-      { name: "Vegetable Stir Fry", image: "images/image.png", file: "recipe8.html" },
-      { name: "Chicken Alfredo", image: "images/image.png", file: "recipe9.html" },
-      { name: "Beef Tacos", image: "images/image.png", file: "recipe10.html" },
-      { name: "Chicken Salad", image: "images/image.png", file: "recipe11.html" },
-      { name: "Pasta Carbonara", image: "images/image.png", file: "recipe12.html" },
-      { name: "Chicken Tenders", image: "images/image.png", file: "recipe13.html" },
-      { name: "Beef Stroganoff", image: "images/image.png", file: "recipe14.html" },
-      { name: "Chicken Enchiladas", image: "images/image.png", file: "recipe15.html" },
-      { name: "Chicken Fajitas", image: "images/image.png", file: "recipe16.html" },
-      { name: "Chicken Parmesan", image: "images/image.png", file: "recipe17.html" },
-      { name: "Chicken Quesadillas", image: "images/image.png", file: "recipe18.html" },
-      { name: "Chicken Wings", image: "images/image.png", file: "recipe19.html" },
-      { name: "Chili Con Carne", image: "images/image.png", file: "recipe20.html" }
+      "recipe1.html",
+      "recipe2.html",
+      "recipe3.html",
+      "recipe4.html"
     ];
 
     const recipeList = document.getElementById("recipe-list");
 
-    // Dynamically create recipe cards
-    recipes.forEach(recipe => {
-      const link = document.createElement("a");
-      link.className = "w3-card w3-white w3-round recipe-card";
-      link.href = `${recipesDir}${recipe.file}`;
+    // Function to extract metadata from a recipe HTML file
+    async function extractRecipeData(file) {
+      try {
+        const response = await fetch(`${recipesDir}${file}`);
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, "text/html");
+
+        const title = doc.querySelector("h1[itemprop='name']").textContent;
+        const image = doc.querySelector("img[itemprop='image']").getAttribute("src");
+        const imagePath = `${recipesDir}${image}`;
+
+        return { title, imagePath, file };
+      } catch (error) {
+        console.error(`Failed to fetch recipe data for ${file}:`, error);
+        return null;
+      }
+    }
+
+    // Function to create a recipe card
+    function createRecipeCard({ title, imagePath, file }) {
+      const card = document.createElement("div");
+      card.className = "w3-card w3-white w3-round recipe-card";
 
       const img = document.createElement("img");
-      img.src = recipe.image;
-      img.alt = recipe.name;
+      img.src = imagePath;
+      img.alt = title;
 
-      const title = document.createElement("div");
-      title.className = "w3-container w3-center w3-padding";
-      title.innerHTML = `<h3>${recipe.name}</h3>`;
+      const titleDiv = document.createElement("div");
+      titleDiv.className = "w3-container w3-center w3-padding";
+      titleDiv.innerHTML = `<h3>${title}</h3>`;
 
+      const link = document.createElement("a");
+      link.href = `${recipesDir}${file}`;
       link.appendChild(img);
-      link.appendChild(title);
-      recipeList.appendChild(link);
-    });
+
+      card.appendChild(link);
+      card.appendChild(titleDiv);
+
+      recipeList.appendChild(card);
+    }
+
+    // Load all recipes dynamically
+    async function loadRecipes() {
+      for (const file of recipes) {
+        const recipeData = await extractRecipeData(file);
+        if (recipeData) {
+          createRecipeCard(recipeData);
+        }
+      }
+    }
+
+    loadRecipes();
   </script>
 
 </body>

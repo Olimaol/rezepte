@@ -3,38 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Einfaches Pfannkuchen-Rezept 2</title>
+    <link rel="stylesheet" href="../w3.css">
+    <title>One Pot Pasta mit Blattspinat</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
 </head>
-<body>
+<body class="w3-light-grey">
     <div itemtype="http://schema.org/Recipe">
-        <h1 itemprop="name">Einfaches Pfannkuchen-Rezept 2</h1>
-        <img itemprop="image" src="../images/image.png" alt="Bananenbrot">
-        <h2>Zutaten:</h2>
-        <ul class="ingredients">
-            <li itemprop="recipeIngredient">1 Tasse Mehl</li>
-            <li itemprop="recipeIngredient">2 Esslöffel Zucker</li>
-            <li itemprop="recipeIngredient">1 Teelöffel Backpulver</li>
-            <li itemprop="recipeIngredient">1/2 Teelöffel Salz</li>
-            <li itemprop="recipeIngredient">1 Tasse Milch</li>
-            <li itemprop="recipeIngredient">1 Ei</li>
-            <li itemprop="recipeIngredient">2 Esslöffel Butter, geschmolzen</li>
-        </ul>
-        <h2>Zubereitung:</h2>
-        <ol itemprop="recipeInstructions">
-            <li>In einer Schüssel die trockenen Zutaten mischen: Mehl, Zucker, Backpulver und Salz.</li>
-            <li>In einer anderen Schüssel Milch, Ei und geschmolzene Butter verquirlen.</li>
-            <li>Die feuchten und trockenen Zutaten zusammengeben und vorsichtig mischen, bis alles verbunden ist.</li>
-            <li>Eine leicht geölte Pfanne oder eine Grillplatte auf mittlerer bis hoher Hitze erhitzen.</li>
-            <li>Für jeden Pfannkuchen etwa 1/4 Tasse Teig in die Pfanne geben und goldbraun backen.</li>
-            <li>Wenden und auf der anderen Seite ebenfalls goldbraun backen.</li>
-            <li>Heiß servieren und nach Belieben mit Ahornsirup, Marmelade oder frischem Obst garnieren.</li>
-        </ol>
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 itemprop="name">One Pot Pasta mit Blattspinat</h1>
+                <img itemprop="image" src="../images/image.png" alt="Spaghetti Bolognese" class="recipe-image">
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul class="ingredients">
+                    <li itemprop="recipeIngredient">250 g Nudeln</li>
+                    <li itemprop="recipeIngredient">200 g Blattspinat (TK)</li>
+                    <li itemprop="recipeIngredient">200 ml Sahne</li>
+                    <li itemprop="recipeIngredient">350 ml Gemüsebrühe</li>
+                    <li itemprop="recipeIngredient">Kräuter</li>
+                    <li itemprop="recipeIngredient">1 Zwiebel</li>
+                    <li itemprop="recipeIngredient">1 Knoblauch</li>
+                    <li itemprop="recipeIngredient">Parmesan</li>
+                </ul>
+                <div data-bring-import style="display:none">
+                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+                </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol itemprop="recipeInstructions">
+                    <li>Zwiebelwürfel und dann Knoblauch anbraten.</li>
+                    <li>Spinat, Nudeln, Gemüsebrühe und Sahne hinzufügen.</li>
+                    <li>Köcheln bis Nudeln gar sind.</li>
+                    <li>Parmesan hinzufügen.</li>
+                </ol>
+            </div>
+        </div>
     </div>
 
     <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
-    <div data-bring-import style="display:none">
-        <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
-    </div>
-
+    
 </body>
 </html>
