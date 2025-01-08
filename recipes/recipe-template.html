@@ -95,7 +95,8 @@
 
             // Add the data-bring-import div dynamically
             const bringImportDiv = document.createElement('div');
-            bringImportDiv.setAttribute('data-bring-import', '');
+            bringImportDiv.setAttribute('data-bring-import');
+            bringImportDiv.setAttribute('style', 'display:none');
             bringImportDiv.innerHTML = '<a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>';
             document.querySelector('.recipe-section').appendChild(bringImportDiv);
 
