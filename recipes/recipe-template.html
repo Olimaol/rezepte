@@ -70,11 +70,11 @@
     </div>
 
     <script>
-        async function loadRecipe() {
+        function loadRecipe() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = urlParams.get('recipe');
-            const response = await fetch('recipes.json');
-            const recipes = await response.json();
+            const response = fetch('recipes.json');
+            const recipes = response.json();
             const recipe = recipes[recipeIndex];
 
             document.getElementById('recipe-title').textContent = recipe.title;
@@ -89,11 +89,6 @@
                 ingredientsList.appendChild(li);
             });
 
-            // Trigger the widget to re-parse the ingredients
-            if (window.bringwidgets && window.bringwidgets.import && typeof window.bringwidgets.import.render === 'function') {
-                window.bringwidgets.import.render(document.querySelector('[data-bring-import]'));
-            }
-
             const instructionsList = document.getElementById('recipe-instructions');
             recipe.instructions.forEach(instruction => {
                 const li = document.createElement('li');
@@ -104,6 +99,6 @@
 
         loadRecipe();
     </script>
-    <script async="async" src="import.js"></script>
+    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
 </body>
 </html>
