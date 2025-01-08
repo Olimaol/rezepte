@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master  # Change this to the branch you want to trigger the workflow on
-      # Only trigger when a user pushes to the master branch, not the bot
-    types:
-      - pushed
 
 jobs:
   generate-and-commit:
