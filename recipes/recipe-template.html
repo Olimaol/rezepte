@@ -96,6 +96,11 @@
                 li.textContent = instruction;
                 instructionsList.appendChild(li);
             });
+
+            // Reinitialize the Bring! widget
+            if (window.Bring) {
+                window.Bring.Widget.init();
+            }
         }
 
         loadRecipe();
