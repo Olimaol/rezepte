@@ -5,6 +5,9 @@ on:
     branches:
       - master  # Change this to the branch you want to trigger the workflow on
 
+permissions:
+  contents: write  # Request write permissions for the GITHUB_TOKEN
+
 jobs:
   generate-and-commit:
     if: github.actor != 'github-actions[bot]'  # Only run this job if the actor is not the GitHub Actions bot
