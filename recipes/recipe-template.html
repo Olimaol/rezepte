@@ -99,11 +99,6 @@
             bringImportDiv.setAttribute('style', 'display:none');
             bringImportDiv.innerHTML = '<a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>';
             document.querySelector('.recipe-section').appendChild(bringImportDiv);
-
-            // Initialize the data-bring-import widget
-            if (window.bringwidgets && window.bringwidgets.import && typeof window.bringwidgets.import.render === 'function') {
-                window.bringwidgets.import.render(bringImportDiv);
-            }
         }
 
         loadRecipe();
