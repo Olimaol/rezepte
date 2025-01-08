@@ -53,21 +53,14 @@
   </div>
 
   <div class="recipe-container" id="recipe-list">
-    
-    <a class="w3-card w3-white w3-round recipe-card" href="recipes/0.html">
-      <img src="images/image.png" alt="One Pot Pasta mit Blattspinat">
+    {% for recipe in recipes %}
+    <a class="w3-card w3-white w3-round recipe-card" href="recipes/{{ loop.index0 }}.html">
+      <img src="images/{{ recipe.image }}" alt="{{ recipe.title }}">
       <div class="w3-container w3-center w3-padding">
-        <h3>One Pot Pasta mit Blattspinat</h3>
+        <h3>{{ recipe.title }}</h3>
       </div>
     </a>
-    
-    <a class="w3-card w3-white w3-round recipe-card" href="recipes/1.html">
-      <img src="images/image.png" alt="Another Recipe">
-      <div class="w3-container w3-center w3-padding">
-        <h3>Another Recipe</h3>
-      </div>
-    </a>
-    
+    {% endfor %}
   </div>
 
 </body>

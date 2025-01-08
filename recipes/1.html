@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../w3.css">
-    <title>{{ recipe.title }}</title>
+    <title>Another Recipe</title>
     <style>
         .recipe-container {
             max-width: 800px;
@@ -44,17 +44,19 @@
         <div class="w3-card w3-white w3-round recipe-container">
             <!-- Recipe Header -->
             <div class="recipe-header">
-                <h1 id="recipe-name" itemprop="name">{{ recipe.title }}</h1>
-                <img id="recipe-image" itemprop="image" src="../images/{{ recipe.image }}" alt="Recipe Image" class="recipe-image">
+                <h1 id="recipe-name" itemprop="name">Another Recipe</h1>
+                <img id="recipe-image" itemprop="image" src="../images/image.png" alt="Recipe Image" class="recipe-image">
             </div>
 
             <!-- Ingredients Section -->
             <div class="recipe-section">
                 <h3>Zutaten</h3>
                 <ul id="recipe-ingredients" class="ingredients">
-                    {% for ingredient in recipe.ingredients %}
-                    <li itemprop="recipeIngredient">{{ ingredient }}</li>
-                    {% endfor %}
+                    
+                    <li itemprop="recipeIngredient">Ingredient 1</li>
+                    
+                    <li itemprop="recipeIngredient">Ingredient 2</li>
+                    
                 </ul>
                 <div data-bring-import style="display:none">
                     <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
@@ -65,9 +67,11 @@
             <div class="recipe-section">
                 <h3>Zubereitung</h3>
                 <ol id="recipe-instructions" itemprop="recipeInstructions">
-                    {% for instruction in recipe.instructions %}
-                    <li>{{ instruction }}</li>
-                    {% endfor %}
+                    
+                    <li>Step 1</li>
+                    
+                    <li>Step 2</li>
+                    
                 </ol>
             </div>
         </div>
