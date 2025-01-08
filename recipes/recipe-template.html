@@ -54,7 +54,7 @@
                 <ul id="recipe-ingredients" class="ingredients">
                     <!-- Ingredients will be inserted here dynamically -->
                 </ul>
-                <div data-bring-import style="display:none">
+                <div data-bring-import>
                     <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
                 </div>
             </div>
@@ -88,6 +88,11 @@
                 li.setAttribute('itemprop', 'recipeIngredient');
                 ingredientsList.appendChild(li);
             });
+
+            // Trigger the widget to re-parse the ingredients
+            if (window.bringwidgets && window.bringwidgets.import && typeof window.bringwidgets.import.render === 'function') {
+                window.bringwidgets.import.render(document.querySelector('[data-bring-import]'));
+            }
 
             const instructionsList = document.getElementById('recipe-instructions');
             recipe.instructions.forEach(instruction => {
