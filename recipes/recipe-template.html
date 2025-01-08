@@ -69,7 +69,6 @@
         </div>
     </div>
 
-    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
     <script>
         async function loadRecipe() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -96,19 +95,10 @@
                 li.textContent = instruction;
                 instructionsList.appendChild(li);
             });
-
-            // Reinitialize the Bring! widget after adding ingredients
-            const bringImportElement = document.querySelector('[data-bring-import]');
-            if (bringImportElement) {
-                bringImportElement.style.display = 'block';  // Ensure the Bring! widget link is visible
-        // Trigger the Bring widget initialization manually after ingredients are populated
-        if (typeof window.Bring !== 'undefined' && window.Bring.Widget) {
-            window.Bring.Widget.init();
-        }
-    }
         }
 
         loadRecipe();
     </script>
+    <script async="async" src="import.js"></script>
 </body>
 </html>
