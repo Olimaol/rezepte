@@ -3,10 +3,14 @@ name: Generate Recipes
 on:
   push:
     branches:
-      - master
-  
+      - master  # Change this to the branch you want to trigger the workflow on
+      # Only trigger when a user pushes to the master branch, not the bot
+    types:
+      - pushed
+
 jobs:
   generate-and-commit:
+    if: github.actor != 'github-actions[bot]'  # Only run this job if the actor is not the GitHub Actions bot
     runs-on: ubuntu-latest
 
     steps:
