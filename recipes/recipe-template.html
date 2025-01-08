@@ -97,10 +97,15 @@
                 instructionsList.appendChild(li);
             });
 
-            // Reinitialize the Bring! widget
-            if (window.Bring) {
-                window.Bring.Widget.init();
-            }
+            // Reinitialize the Bring! widget after adding ingredients
+            const bringImportElement = document.querySelector('[data-bring-import]');
+            if (bringImportElement) {
+                bringImportElement.style.display = 'block';  // Ensure the Bring! widget link is visible
+        // Trigger the Bring widget initialization manually after ingredients are populated
+        if (typeof window.Bring !== 'undefined' && window.Bring.Widget) {
+            window.Bring.Widget.init();
+        }
+    }
         }
 
         loadRecipe();
