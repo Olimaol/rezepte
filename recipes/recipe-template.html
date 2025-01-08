@@ -54,9 +54,6 @@
                 <ul id="recipe-ingredients" class="ingredients">
                     <!-- Ingredients will be inserted here dynamically -->
                 </ul>
-                <div data-bring-import>
-                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
-                </div>
             </div>
 
             <!-- Instructions Section -->
@@ -70,11 +67,11 @@
     </div>
 
     <script>
-        function loadRecipe() {
+        async function loadRecipe() {
             const urlParams = new URLSearchParams(window.location.search);
             const recipeIndex = urlParams.get('recipe');
-            const response = fetch('recipes.json');
-            const recipes = response.json();
+            const response = await fetch('recipes.json');
+            const recipes = await response.json();
             const recipe = recipes[recipeIndex];
 
             document.getElementById('recipe-title').textContent = recipe.title;
@@ -95,6 +92,17 @@
                 li.textContent = instruction;
                 instructionsList.appendChild(li);
             });
+
+            // Add the data-bring-import div dynamically
+            const bringImportDiv = document.createElement('div');
+            bringImportDiv.setAttribute('data-bring-import', '');
+            bringImportDiv.innerHTML = '<a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>';
+            document.querySelector('.recipe-section').appendChild(bringImportDiv);
+
+            // Initialize the data-bring-import widget
+            if (window.bringwidgets && window.bringwidgets.import && typeof window.bringwidgets.import.render === 'function') {
+                window.bringwidgets.import.render(bringImportDiv);
+            }
         }
 
         loadRecipe();
