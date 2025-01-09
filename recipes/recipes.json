@@ -20,16 +20,24 @@
     ]
   },
   {
-    "title": "Another Recipe",
+    "title": "One Pot Kartoffel-Möhren-Gulasch",
     "image": "image.png",
     "ingredients": [
-      "Ingredient 1",
-      "Ingredient 2",
-      "test 3"
+      "2 Zwiebeln",
+      "750 g Möhren",
+      "750 g Kartoffeln",
+      "125 g Speckwürfel",
+      "200 g Schmand",
     ],
     "instructions": [
-      "Step 1",
-      "Step 2"
+      "Zwiebeln, Möhren, Kartoffeln klein schneiden.",
+      "Speckwürfel knusprig braten.",
+      "Zwiebeln mit anbraten.",
+      "Möhren, Kartoffeln und 1 TL Paprikapulver kurz mit andünsten.",
+      "Salzen und Pfeffern.",
+      "1 l Wasser dazu, aufkochen und 3 TL Gemüsebrühe und Oregano dazugeben.",
+      "Alles zugedeckt ca. 15 Minuten kochen.",
+      "Schmand rein, fertig."
     ]
   }
 ]
