@@ -16,7 +16,7 @@
       "Zwiebelwürfel und dann Knoblauch anbraten.",
       "Spinat, Nudeln, Gemüsebrühe und Sahne hinzufügen.",
       "Köcheln bis Nudeln gar sind.",
-      "Parmesan hinzufügen."
+      "Parmesan hinzufügen, fertig."
     ]
   },
   {
@@ -44,24 +44,22 @@
     "title": "One Pot Gnocchi mit Garnelen",
     "image": "image.png",
     "ingredients": [
-      "400 g TK-Garnelen (ohne Kopf und Schale)",
-      "1 Zucchini",
-      "1 Aubergine",
+      "400 g Garnelen (TK)",
+      "2 Zucchini",
       "2 Knoblauchzehen",
       "2 rote Chilischoten",
-      "4 EL Öl",
-      "500 g Gnocchetti (Kühlregal)",
-      "1 Dose (425 ml) stückige Tomaten",
-      "Salz",
-      "Pfeffer",
-      "Rosenpaprika",
-      "1 TL flüssigen Honig",
-      "100 g Babyspinat"
+      "500 g Gnocchi (Kühlregal)",
+      "1 Dose stückige Tomaten (400 ml)",
+      "100 g Blattspinat (TK)"
     ],
     "instructions": [
-      "Garnelen auftauen lassen. Zucchini und Aubergine putzen, waschen, würfeln. Knoblauch schälen, hacken. Chilis putzen, längs aufschneiden, entkernen, waschen und klein schneiden.",
-      "2 EL Öl in einem Topf erhitzen. Gnocchetti darin 2–3 Minuten anbraten, herausnehmen. Garnelen waschen, trocken tupfen und im Bratfett ca. 3 Minuten anbraten. Knoblauch und Chilis kurz mitbraten. Herausnehmen.",
-      "2 EL Öl im Bratsatz erhitzen. Gemüse darin anbraten. Tomaten und 150 ml Wasser angießen. Mit Salz, Pfeffer, 1 TL Rosen­paprika und Honig würzen, aufkochen und zugedeckt ca. 5 Minuten köcheln. Spinat verlesen, waschen, trocken schleudern. Gnocchetti, Garnelen und Spinat zur Tomatensoße geben, kurz erwärmen und abschmecken."
+      "Zucchini, Knoblauch, Chilis klein schneiden.",
+      "Gnocchi 2-3 Minuten anbraten, herausnehmen.",
+      "Garnelen braten, Knoblauch und Chillis kurz mitbraten, alles herausnehmen, zu den Gnocchi.",
+      "Zucchini anbraten.",
+      "Die Dose Tomaten, 150 ml Wasser und 100 g TK Spinat hinzugeben. Mit Salz, Pfeffer, 1 TL Rosen­paprika und Honig würzen, aufkochen.",
+      "Zugedeckt ca. 5 Minuten köcheln.",
+      "Gnocchi-Garnelen Mix hinzugeben, kurz erwärmen und abschmecken, fertig."
     ]
   }
 ]
