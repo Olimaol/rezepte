@@ -61,5 +61,27 @@
       "Zugedeckt ca. 5 Minuten köcheln.",
       "Gnocchi-Garnelen Mix hinzugeben, kurz erwärmen und abschmecken, fertig."
     ]
+  },
+  {
+    "title": "One Pot Pasta nach Bologneser Art",
+    "image": "image.png",
+    "ingredients": [
+      "½ kg Hackfleisch, gemischtes",
+      "½ Bund Frühlingszwiebel(n), in Ringe geschnitten",
+      "450 ml Rinderfond oder Rinderbrühe",
+      "1 Dose(n) Tomaten, stückige, à 400 g",
+      "250 g Penne Rigate, mittlere Größe (z. B. Nr. 73 von Barilla)",
+      "1 ½ EL Tomatenmark",
+      "2 EL Olivenöl, natives",
+      "1 ½ TL Salz",
+      "1 ½ TL Paprikapulver, edelsüßes",
+      "1 ½ TL Kräuter, italienische, getrocknete",
+      "150 g Kräuterfrischkäse"
+    ],
+    "instructions": [
+      "In einem großen Topf das Hackfleisch im Olivenöl scharf anbraten. Salzen, dann das Tomatenmark mittig hinzugeben und mitrösten.",
+      "Bis auf den Frischkäse alle restlichen Zutaten (auch die ungegarten Penne) hinzufügen und unter gelegentlichem, kräftigen Rühren 13 Minuten leise köcheln lassen.",
+      "Zum Schluss den Frischkäse unterrühren. Mit Salz und Pfeffer kräftig abschmecken, fertig."
+    ]
   }
 ]
