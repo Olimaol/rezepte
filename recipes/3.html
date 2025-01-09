@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../w3.css">
+    <title>One Pot Pasta nach Bologneser Art</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+
+    <!-- Navbar -->
+    <div class="w3-bar w3-teal">
+        <a href="../index.html" class="w3-bar-item w3-button">Home</a>
+    </div>
+
+    <div itemtype="http://schema.org/Recipe">
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 id="recipe-name" itemprop="name">One Pot Pasta nach Bologneser Art</h1>
+                <img id="recipe-image" itemprop="image" src="../images/image.png" alt="Recipe Image" class="recipe-image">
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul id="recipe-ingredients" class="ingredients">
+                    
+                    <li itemprop="recipeIngredient">½ kg Hackfleisch, gemischtes</li>
+                    
+                    <li itemprop="recipeIngredient">½ Bund Frühlingszwiebel(n), in Ringe geschnitten</li>
+                    
+                    <li itemprop="recipeIngredient">450 ml Rinderfond oder Rinderbrühe</li>
+                    
+                    <li itemprop="recipeIngredient">1 Dose(n) Tomaten, stückige, à 400 g</li>
+                    
+                    <li itemprop="recipeIngredient">250 g Penne Rigate, mittlere Größe (z. B. Nr. 73 von Barilla)</li>
+                    
+                    <li itemprop="recipeIngredient">1 ½ EL Tomatenmark</li>
+                    
+                    <li itemprop="recipeIngredient">2 EL Olivenöl, natives</li>
+                    
+                    <li itemprop="recipeIngredient">1 ½ TL Salz</li>
+                    
+                    <li itemprop="recipeIngredient">1 ½ TL Paprikapulver, edelsüßes</li>
+                    
+                    <li itemprop="recipeIngredient">1 ½ TL Kräuter, italienische, getrocknete</li>
+                    
+                    <li itemprop="recipeIngredient">150 g Kräuterfrischkäse</li>
+                    
+                </ul>
+                <div data-bring-import style="display:none">
+                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+                </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol id="recipe-instructions" itemprop="recipeInstructions">
+                    
+                    <li>In einem großen Topf das Hackfleisch im Olivenöl scharf anbraten. Salzen, dann das Tomatenmark mittig hinzugeben und mitrösten.</li>
+                    
+                    <li>Bis auf den Frischkäse alle restlichen Zutaten (auch die ungegarten Penne) hinzufügen und unter gelegentlichem, kräftigen Rühren 13 Minuten leise köcheln lassen.</li>
+                    
+                    <li>Zum Schluss den Frischkäse unterrühren. Mit Salz und Pfeffer kräftig abschmecken, fertig.</li>
+                    
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+</body>
+</html>
