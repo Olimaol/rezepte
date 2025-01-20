@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../w3.css">
+    <title>One Pot Gemüse-Couscous</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+
+    <!-- Navbar -->
+    <div class="w3-bar w3-teal">
+        <a href="../index.html" class="w3-bar-item w3-button">Home</a>
+    </div>
+
+    <div itemtype="http://schema.org/Recipe">
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 id="recipe-name" itemprop="name">One Pot Gemüse-Couscous</h1>
+                <img id="recipe-image" itemprop="image" src="../images/OnePotGemüseCouscous.jpg" alt="Recipe Image" class="recipe-image">
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul id="recipe-ingredients" class="ingredients">
+                    
+                    <li itemprop="recipeIngredient">2 Zehe/n Knoblauch</li>
+                    
+                    <li itemprop="recipeIngredient">200 g Möhre(n)</li>
+                    
+                    <li itemprop="recipeIngredient">400 g Paprikaschote(n), rot</li>
+                    
+                    <li itemprop="recipeIngredient">500 g Brokkoli (TK)</li>
+                    
+                    <li itemprop="recipeIngredient">400 g Champignons</li>
+                    
+                    <li itemprop="recipeIngredient">2 EL Currypulver</li>
+                    
+                    <li itemprop="recipeIngredient">2 TL Harissa</li>
+                    
+                    <li itemprop="recipeIngredient">Salz und Pfeffer</li>
+                    
+                    <li itemprop="recipeIngredient">400 ml Gemüsebrühe</li>
+                    
+                    <li itemprop="recipeIngredient">200 g Couscous</li>
+                    
+                </ul>
+                <div data-bring-import style="display:none">
+                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+                </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol id="recipe-instructions" itemprop="recipeInstructions">
+                    
+                    <li>Knoblauch und Gemüse klein schneiden.</li>
+                    
+                    <li>Alles Gemüse in einem großen Topf anbraten.</li>
+                    
+                    <li>Currypulver und Harissa dazugeben und kurz mitbraten.</li>
+                    
+                    <li>Mit Gemüsebrühe ablöschen und aufkochen lassen.</li>
+                    
+                    <li>Couscous dazugeben, umrühren und vom Herd nehmen.</li>
+                    
+                    <li>Ca. 5 Minuten quellen lassen, fertig.</li>
+                    
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+</body>
+</html>
