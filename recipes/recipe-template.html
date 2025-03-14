@@ -70,6 +70,27 @@
                     {% endfor %}
                 </ol>
             </div>
+
+            <!-- Nutritional Information Section -->
+            <div class="recipe-section">
+                <h3>Nährwerte</h3>
+                {% if nutrition %}
+                <ul>
+                    <li>Kalorien: {{ nutrition.nf_calories }}</li>
+                    <li>Fett: {{ nutrition.nf_total_fat }}</li>
+                    <li>gesättigte Fettsäuren: {{ nutrition.nf_saturated_fat }}</li>
+                    <li>Kohlenhydrate: {{ nutrition.nf_total_carbohydrate }}</li>
+                    <li>Zucker: {{ nutrition.nf_sugars }}</li>
+                    <li>Eiweiß: {{ nutrition.nf_protein }}</li>
+                    <li>Cholesterin: {{ nutrition.nf_cholesterol }}</li>
+                    <li>Natrium: {{ nutrition.nf_sodium }}</li>
+                    <li>Ballaststoffe: {{ nutrition.nf_dietary_fiber }}</li>
+                    <li>Kalium: {{ nutrition.nf_potassium }}</li>
+                </ul>
+                {% else %}
+                <p>Nährwertinformationen nicht verfügbar.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 

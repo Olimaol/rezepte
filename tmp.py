@@ -1,8 +1,6 @@
-import json
 import os
-from jinja2 import Environment, FileSystemLoader
-import requests
 import sys
+import requests
 
 
 def translate_to_english(text):
@@ -40,8 +38,7 @@ def translate_to_english(text):
 
 def get_nutrition_info(ingredients_query):
     """
-    Calls the Nutritionix API to fetch nutritional details
-    for a natural language query of ingredients.
+    Calls the Nutritionix API to fetch nutritional details for the given ingredients query.
     """
     app_id = os.environ.get("NUTRITIONIX_APP_ID")
     api_key = os.environ.get("NUTRITIONIX_API_KEY")
@@ -59,7 +56,6 @@ def get_nutrition_info(ingredients_query):
         "Content-Type": "application/json",
     }
 
-    # The query field should contain the ingredients list.
     payload = {"query": ingredients_query}
 
     response = requests.post(url, headers=headers, json=payload)
@@ -73,9 +69,8 @@ def get_nutrition_info(ingredients_query):
 
 def calculate_totals(nutrition_data):
     """
-    Sums the nutritional values across all food items returned by the API.
+    Sums up nutritional values from all food items returned by the Nutritionix API.
     """
-    # Define the nutritional fields we're interested in.
     fields = [
         "nf_calories",
         "nf_total_fat",
@@ -96,43 +91,37 @@ def calculate_totals(nutrition_data):
         for field in fields:
             totals[field] += food.get(field, 0)
 
-    # round the totals to two decimal places
-    totals = {field: round(value, 2) for field, value in totals.items()}
-
-    # transform the values to strings and add units
-
     return totals
 
 
-# Load recipes from JSON file
-with open("recipes/recipes.json", "r", encoding="utf-8") as file:
-    recipes = json.load(file)
+def print_totals(totals):
+    """
+    Prints the aggregated nutritional information.
+    """
+    print("\nTotal Nutritional Information:")
+    for key, value in totals.items():
+        print(f"{key}: {value}")
 
-# Set up Jinja2 environment
-env = Environment(
-    loader=FileSystemLoader(".")
-)  # Change the loader path to the current directory
-template = env.get_template("recipes/recipe-template.html")
 
-# Create output directory if it doesn't exist
-output_dir = "recipes/"
-os.makedirs(output_dir, exist_ok=True)
+def main():
+    # Get ingredients in German from the user.
+    ingredients_german = input(
+        "Geben Sie Ihre Zutatenliste ein (z.B. '2 Eier, 1 Tasse Milch, 1 Scheibe Brot'): "
+    )
 
-# Generate HTML files for each recipe
-for index, recipe in enumerate(recipes):
-    # Query nutritional info using all ingredients as a single query
-    ingredients_german = " ".join(recipe["ingredients"])
-    try:
-        ingredients_english = translate_to_english(ingredients_german)
-        nutrition_data = get_nutrition_info(ingredients_english)
-        nutrition_totals = calculate_totals(nutrition_data)
-    except Exception:
-        nutrition_totals = None
-    output_path = os.path.join(output_dir, f"{index}.html")
-    with open(output_path, "w", encoding="utf-8") as output_file:
-        output_file.write(template.render(recipe=recipe, nutrition=nutrition_totals))
+    # Translate the German ingredients list to English.
+    ingredients_english = translate_to_english(ingredients_german)
+    print("\nTranslated Ingredients:", ingredients_english)
 
-# Generate index.html
-index_template = env.get_template("index_template.html")
-with open("index.html", "w", encoding="utf-8") as index_file:
-    index_file.write(index_template.render(recipes=recipes))
+    # Retrieve nutritional data using the translated text.
+    nutrition_data = get_nutrition_info(ingredients_english)
+
+    # Calculate total nutritional values.
+    totals = calculate_totals(nutrition_data)
+
+    # Print the aggregated nutritional information.
+    print_totals(totals)
+
+
+if __name__ == "__main__":
+    main()
