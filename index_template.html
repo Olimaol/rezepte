@@ -54,7 +54,9 @@
 
   <div class="recipe-container" id="recipe-list">
     {% for recipe in recipes %}
-    <a class="w3-card w3-white w3-round recipe-card" href="recipes/{{ loop.index0 }}.html">
+    <a class="w3-card w3-white w3-round recipe-card" href="recipes/{{ loop.index0 }}.html"
+       data-title="{{ recipe.title|lower }}"
+       data-ingredients="{{ recipe.ingredients|join(' ')|lower }}">
       <img src="images/{{ recipe.image }}" alt="{{ recipe.title }}">
       <div class="w3-container w3-center w3-padding">
         <h3>{{ recipe.title }}</h3>
@@ -63,5 +65,20 @@
     {% endfor %}
   </div>
 
+  <script>
+    // Filter recipes as you type
+    document.getElementById("search-input").addEventListener("input", function() {
+      var query = this.value.toLowerCase();
+      document.querySelectorAll(".recipe-card").forEach(function(card) {
+        var title = card.getAttribute("data-title");
+        var ingredients = card.getAttribute("data-ingredients");
+        if (title.indexOf(query) > -1 || ingredients.indexOf(query) > -1) {
+          card.style.display = "inline-block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
