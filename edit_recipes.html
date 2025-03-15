@@ -68,11 +68,12 @@
     let recipesData = [];
     
     // -------------------------------
-    // Fetch the recipes JSON from the file
+    // Fetch the recipes JSON from the file with a cache-busting query parameter
     // -------------------------------
     async function fetchRecipes() {
       try {
-        const response = await fetch(filePath);
+        // Append a timestamp to force a fresh fetch
+        const response = await fetch(filePath + '?t=' + new Date().getTime(), {cache: "no-store"});
         recipesData = await response.json();
         renderRecipes();
       } catch (error) {
@@ -263,7 +264,7 @@
           })
         });
         if (putResponse.ok) {
-          alert("Recipes updated successfully!");
+          alert("Recipes updated successfully! Will take effect shortly.");
         } else {
           const err = await putResponse.json();
           console.error("Error pushing changes:", err);
@@ -273,8 +274,7 @@
         console.error("Error:", error);
         alert("An error occurred. Check console for details.");
       }
-      // Do not call event.preventDefault() so that the form submission goes through and Firefox
-      // can prompt to save the token in its password manager.
+      // Let the form submission proceed so Firefox can offer to store the token.
     }
     
     // -------------------------------
