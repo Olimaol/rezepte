@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Editor</title>
+  <link rel="stylesheet" href="w3.css">
+  <style>
+    /* Additional custom styling */
+    .recipe {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .field-group {
+      margin-bottom: 10px;
+    }
+    .list-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .list-item input {
+      flex: 1;
+    }
+    .list-item button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body class="w3-container">
+  <h2>Recipe Editor</h2>
+  
+  <!-- GitHub token input to restrict pushing changes -->
+  <div class="w3-panel w3-border w3-padding">
+    <label for="githubToken">GitHub Token (for pushing changes):</label>
+    <input type="password" id="githubToken" class="w3-input" placeholder="Enter GitHub token">
+  </div>
+  
+  <!-- Container where the recipes editor will be rendered -->
+  <div id="editor"></div>
+  
+  <!-- Buttons for adding recipes and saving changes -->
+  <button id="addRecipeBtn" class="w3-button w3-green w3-margin">+ Add New Recipe</button>
+  <button id="saveChangesBtn" class="w3-button w3-blue w3-margin">Save Changes (Push to GitHub)</button>
+  
+  <script>
+    // -------------------------------
+    // Configuration – update these!
+    // -------------------------------
+    const repoOwner = "YOUR_GITHUB_USERNAME";  // <-- Replace with your GitHub username
+    const repoName = "YOUR_REPO_NAME";         // <-- Replace with your repository name
+    const filePath = "recipes/recipes.json";
+
+    // Global variable to hold the recipes JSON data
+    let recipesData = [];
+    
+    // -------------------------------
+    // Fetch the recipes JSON from the file
+    // -------------------------------
+    async function fetchRecipes() {
+      try {
+        const response = await fetch(filePath);
+        recipesData = await response.json();
+        renderRecipes();
+      } catch (error) {
+        console.error("Error fetching recipes:", error);
+      }
+    }
+    
+    // -------------------------------
+    // Render the recipes editor view
+    // -------------------------------
+    function renderRecipes() {
+      const editor = document.getElementById("editor");
+      editor.innerHTML = "";
+      recipesData.forEach((recipe, recipeIndex) => {
+        // Create a container for each recipe
+        const recipeDiv = document.createElement("div");
+        recipeDiv.className = "recipe w3-card-4 w3-padding";
+        recipeDiv.setAttribute("data-index", recipeIndex);
+
+        // Header: editable title and delete button for the recipe
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "w3-container w3-light-grey";
+        
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.className = "w3-input";
+        titleInput.value = recipe.title;
+        titleInput.placeholder = "Recipe Title";
+        titleInput.oninput = (e) => {
+          recipesData[recipeIndex].title = e.target.value;
+        };
+        
+        const deleteRecipeBtn = document.createElement("button");
+        deleteRecipeBtn.className = "w3-button w3-red w3-right";
+        deleteRecipeBtn.textContent = "−";  // minus sign
+        deleteRecipeBtn.onclick = () => {
+          if(confirm("Delete this recipe?")){
+            recipesData.splice(recipeIndex, 1);
+            renderRecipes();
+          }
+        };
+        
+        headerDiv.appendChild(titleInput);
+        headerDiv.appendChild(deleteRecipeBtn);
+        recipeDiv.appendChild(headerDiv);
+        
+        // Image URL field
+        const imageDiv = document.createElement("div");
+        imageDiv.className = "field-group";
+        const imageLabel = document.createElement("label");
+        imageLabel.textContent = "Image URL:";
+        const imageInput = document.createElement("input");
+        imageInput.type = "text";
+        imageInput.className = "w3-input";
+        imageInput.value = recipe.image;
+        imageInput.placeholder = "Image URL";
+        imageInput.oninput = (e) => {
+          recipesData[recipeIndex].image = e.target.value;
+        };
+        imageDiv.appendChild(imageLabel);
+        imageDiv.appendChild(imageInput);
+        recipeDiv.appendChild(imageDiv);
+        
+        // Ingredients list
+        const ingDiv = document.createElement("div");
+        ingDiv.className = "field-group";
+        const ingLabel = document.createElement("label");
+        ingLabel.textContent = "Ingredients:";
+        ingDiv.appendChild(ingLabel);
+        recipe.ingredients.forEach((ing, ingIndex) => {
+          const ingItem = createListItem(recipeIndex, "ingredients", ingIndex, ing);
+          ingDiv.appendChild(ingItem);
+        });
+        // Button to add a new ingredient
+        const addIngBtn = document.createElement("button");
+        addIngBtn.className = "w3-button w3-green w3-small";
+        addIngBtn.textContent = "+ Add Ingredient";
+        addIngBtn.onclick = () => {
+          recipesData[recipeIndex].ingredients.push("");
+          renderRecipes();
+        };
+        ingDiv.appendChild(addIngBtn);
+        recipeDiv.appendChild(ingDiv);
+        
+        // Instructions list
+        const instrDiv = document.createElement("div");
+        instrDiv.className = "field-group";
+        const instrLabel = document.createElement("label");
+        instrLabel.textContent = "Instructions:";
+        instrDiv.appendChild(instrLabel);
+        recipe.instructions.forEach((instr, instrIndex) => {
+          const instrItem = createListItem(recipeIndex, "instructions", instrIndex, instr);
+          instrDiv.appendChild(instrItem);
+        });
+        // Button to add a new instruction
+        const addInstrBtn = document.createElement("button");
+        addInstrBtn.className = "w3-button w3-green w3-small";
+        addInstrBtn.textContent = "+ Add Instruction";
+        addInstrBtn.onclick = () => {
+          recipesData[recipeIndex].instructions.push("");
+          renderRecipes();
+        };
+        instrDiv.appendChild(addInstrBtn);
+        recipeDiv.appendChild(instrDiv);
+        
+        editor.appendChild(recipeDiv);
+      });
+    }
+    
+    // -------------------------------
+    // Create a list item for ingredients or instructions
+    // -------------------------------
+    function createListItem(recipeIndex, key, itemIndex, value) {
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "list-item";
+      
+      const itemInput = document.createElement("input");
+      itemInput.type = "text";
+      itemInput.className = "w3-input";
+      itemInput.value = value;
+      itemInput.oninput = (e) => {
+        recipesData[recipeIndex][key][itemIndex] = e.target.value;
+      };
+      
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "w3-button w3-red";
+      deleteBtn.textContent = "−";
+      deleteBtn.onclick = () => {
+        recipesData[recipeIndex][key].splice(itemIndex, 1);
+        renderRecipes();
+      };
+      
+      itemDiv.appendChild(itemInput);
+      itemDiv.appendChild(deleteBtn);
+      
+      return itemDiv;
+    }
+    
+    // -------------------------------
+    // Add a new recipe
+    // -------------------------------
+    document.getElementById("addRecipeBtn").onclick = () => {
+      const newRecipe = {
+        title: "New Recipe",
+        image: "",
+        ingredients: [],
+        instructions: []
+      };
+      recipesData.push(newRecipe);
+      renderRecipes();
+    };
+    
+    // -------------------------------
+    // Save changes: push updated JSON to GitHub via the GitHub API
+    // -------------------------------
+    document.getElementById("saveChangesBtn").onclick = async () => {
+      const token = document.getElementById("githubToken").value.trim();
+      if (!token) {
+        alert("Please enter your GitHub token.");
+        return;
+      }
+      const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+      try {
+        // First, get the current file info (to obtain the SHA)
+        const getResponse = await fetch(apiUrl);
+        if (!getResponse.ok) {
+          throw new Error("Failed to fetch file info from GitHub.");
+        }
+        const fileData = await getResponse.json();
+        const sha = fileData.sha;
+        
+        // Prepare the updated content (base64-encoded)
+        const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(recipesData, null, 2))));
+        const commitMessage = "Update recipes via editor";
+        
+        // Send the PUT request to update the file
+        const putResponse = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "token " + token
+          },
+          body: JSON.stringify({
+            message: commitMessage,
+            content: updatedContent,
+            sha: sha
+          })
+        });
+        if (putResponse.ok) {
+          alert("Recipes updated successfully!");
+        } else {
+          const err = await putResponse.json();
+          console.error("Error pushing changes:", err);
+          alert("Failed to update recipes. Check console for details.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred. Check console for details.");
+      }
+    };
+    
+    // -------------------------------
+    // Initialize by fetching and rendering the recipes
+    // -------------------------------
+    fetchRecipes();
+  </script>
+</body>
+</html>
