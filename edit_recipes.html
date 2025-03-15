@@ -37,20 +37,24 @@
   <header class="w3-container w3-teal w3-center w3-padding-32">
     <h1>Rezepteditor</h1>
   </header>
-
   
-  <!-- GitHub token input to restrict pushing changes -->
-  <div class="w3-panel w3-border w3-padding">
-    <label for="githubToken">GitHub Token (for pushing changes):</label>
-    <input type="password" id="githubToken" class="w3-input" placeholder="Enter GitHub token">
-  </div>
+  <!-- GitHub token form to trigger browser password manager prompt -->
+  <form id="githubForm" action="about:blank" method="post" target="dummyFrame" onsubmit="pushChanges();">
+    <div class="w3-panel w3-border w3-padding">
+      <label for="githubToken">GitHub Token (for pushing changes):</label>
+      <!-- Using autocomplete attribute to help the browser identify this as a password field -->
+      <input type="password" id="githubToken" name="githubToken" class="w3-input" autocomplete="current-password" placeholder="Enter GitHub token">
+    </div>
+    <button type="submit" class="w3-button w3-blue w3-margin">Save Changes (Push to GitHub)</button>
+  </form>
+  <!-- Hidden iframe so that the form submission doesn’t navigate away from the page -->
+  <iframe name="dummyFrame" style="display:none;"></iframe>
   
   <!-- Container where the recipes editor will be rendered -->
   <div id="editor"></div>
   
-  <!-- Buttons for adding recipes and saving changes -->
+  <!-- Button to add new recipes -->
   <button id="addRecipeBtn" class="w3-button w3-green w3-margin">+ Add New Recipe</button>
-  <button id="saveChangesBtn" class="w3-button w3-blue w3-margin">Save Changes (Push to GitHub)</button>
   
   <script>
     // -------------------------------
@@ -223,8 +227,9 @@
     
     // -------------------------------
     // Save changes: push updated JSON to GitHub via the GitHub API
+    // (This function is called as the onsubmit handler of the form.)
     // -------------------------------
-    document.getElementById("saveChangesBtn").onclick = async () => {
+    async function pushChanges() {
       const token = document.getElementById("githubToken").value.trim();
       if (!token) {
         alert("Please enter your GitHub token.");
@@ -268,7 +273,9 @@
         console.error("Error:", error);
         alert("An error occurred. Check console for details.");
       }
-    };
+      // Do not call event.preventDefault() so that the form submission goes through and Firefox
+      // can prompt to save the token in its password manager.
+    }
     
     // -------------------------------
     // Initialize by fetching and rendering the recipes
