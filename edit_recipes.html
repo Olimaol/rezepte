@@ -27,7 +27,7 @@
     }
   </style>
 </head>
-<body class="w3-container">
+<body class="w3-light-grey">
 
   <!-- Navbar -->
   <div class="w3-bar w3-teal">
@@ -38,15 +38,17 @@
     <h1>Rezepteditor</h1>
   </header>
   
-  <!-- GitHub token form to trigger browser password manager prompt -->
-  <form id="githubForm" action="about:blank" method="post" target="dummyFrame" onsubmit="pushChanges();">
-    <div class="w3-panel w3-border w3-padding">
-      <label for="githubToken">GitHub Token (for pushing changes):</label>
-      <!-- Using autocomplete attribute to help the browser identify this as a password field -->
-      <input type="password" id="githubToken" name="githubToken" class="w3-input" autocomplete="current-password" placeholder="Enter GitHub token">
-    </div>
-    <button type="submit" class="w3-button w3-blue w3-margin">Save Changes (Push to GitHub)</button>
-  </form>
+  <!-- Wrap GitHub token form in a card for consistent styling -->
+  <div class="w3-card-4 w3-margin w3-padding">
+    <form id="githubForm" action="about:blank" method="post" target="dummyFrame" onsubmit="pushChanges();">
+      <div class="w3-panel w3-border w3-padding">
+        <label for="githubToken">GitHub Token (for pushing changes):</label>
+        <!-- Using autocomplete attribute to help the browser identify this as a password field -->
+        <input type="password" id="githubToken" name="githubToken" class="w3-input" autocomplete="current-password" placeholder="Enter GitHub token">
+      </div>
+      <button type="submit" class="w3-button w3-blue w3-margin">Save Changes (Push to GitHub)</button>
+    </form>
+  </div>
   <!-- Hidden iframe so that the form submission doesn’t navigate away from the page -->
   <iframe name="dummyFrame" style="display:none;"></iframe>
   
