@@ -108,5 +108,15 @@
       "Couscous dazugeben, umrühren und vom Herd nehmen.",
       "Ca. 5 Minuten quellen lassen, fertig."
     ]
+  },
+  {
+    "title": "Gebratene Zwiebeln",
+    "image": "image.jpg",
+    "ingredients": [
+      "5 Zwiebeln"
+    ],
+    "instructions": [
+      "Zwiebeln braten"
+    ]
   }
 ]
