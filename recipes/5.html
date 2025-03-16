@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../w3.css">
+    <title>Gebratene Zwiebeln</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+
+    <!-- Navbar -->
+    <div class="w3-bar w3-teal">
+        <a href="../index.html" class="w3-bar-item w3-button">Home</a>
+        <a href="../edit_recipes.html" class="w3-bar-item w3-button">Editor</a>
+    </div>
+
+    <!-- Recipe Container -->
+    <div itemtype="http://schema.org/Recipe">
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 id="recipe-name" itemprop="name">Gebratene Zwiebeln</h1>
+                <img id="recipe-image" itemprop="image" src="../images/image.jpg" alt="Recipe Image" class="recipe-image">
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul id="recipe-ingredients" class="ingredients">
+                    
+                    <li itemprop="recipeIngredient">5 Zwiebeln</li>
+                    
+                </ul>
+                <div data-bring-import style="display:none">
+                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+                </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol id="recipe-instructions" itemprop="recipeInstructions">
+                    
+                    <li>Zwiebeln braten</li>
+                    
+                </ol>
+            </div>
+
+            <!-- Nutritional Information Section -->
+            <div class="recipe-section">
+                <h3>Nährwerte</h3>
+                
+                <ul>
+                    <li>Kalorien: 206.8 kcal</li>
+                    <li>Fett: 0.89 g</li>
+                    <ul>
+                        <li>gesättigte Fettsäuren: 0.15 g</li>
+                    </ul>
+                    <li>Kohlenhydrate: 47.71 g</li>
+                    <ul>
+                        <li>Zucker: 22.23 g</li>
+                    </ul>
+                    <li>Eiweiß: 6.39 g</li>
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+
+    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+</body>
+</html>
