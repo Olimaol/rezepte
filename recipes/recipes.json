@@ -9,7 +9,7 @@
       "350 ml Gemüsebrühe",
       "Kräuter",
       "1 Zwiebel",
-      "1 Knoblauch",
+      "1 Knoblauchzehe",
       "Parmesan"
     ],
     "instructions": [
@@ -89,14 +89,13 @@
     "title": "One Pot Gemüse-Couscous",
     "image": "image.png",
     "ingredients": [
-      "2 Zehe/n Knoblauch",
-      "200 g Möhre(n)",
-      "400 g Paprikaschote(n), rot",
+      "2 Knoblauchzehen",
+      "200 g Möhre",
+      "400 g Paprika (rot)",
       "500 g Brokkoli (TK)",
       "400 g Champignons",
       "2 EL Currypulver",
       "2 TL Harissa",
-      "Salz und Pfeffer",
       "400 ml Gemüsebrühe",
       "200 g Couscous"
     ],
@@ -107,16 +106,6 @@
       "Mit Gemüsebrühe ablöschen und aufkochen lassen.",
       "Couscous dazugeben, umrühren und vom Herd nehmen.",
       "Ca. 5 Minuten quellen lassen, fertig."
-    ]
-  },
-  {
-    "title": "Gebratene Zwiebeln",
-    "image": "image.png",
-    "ingredients": [
-      "5 Zwiebeln"
-    ],
-    "instructions": [
-      "Zwiebeln braten"
     ]
   }
 ]
