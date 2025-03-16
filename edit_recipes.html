@@ -98,10 +98,13 @@
         // Header: editable title and delete button for the recipe
         const headerDiv = document.createElement("div");
         headerDiv.className = "w3-container w3-light-grey";
+        headerDiv.style.display = "flex";
+        headerDiv.style.alignItems = "center";
         
         const titleInput = document.createElement("input");
         titleInput.type = "text";
         titleInput.className = "w3-input";
+        titleInput.style.flexGrow = "1"; // Added to allow the input to fill available space
         titleInput.value = recipe.title;
         titleInput.placeholder = "Recipe Title";
         titleInput.oninput = (e) => {
@@ -109,7 +112,9 @@
         };
         
         const deleteRecipeBtn = document.createElement("button");
-        deleteRecipeBtn.className = "w3-button w3-red w3-right";
+        deleteRecipeBtn.className = "w3-button w3-red";
+        // Removed w3-right; add marginLeft to separate from title
+        deleteRecipeBtn.style.marginLeft = "10px";
         deleteRecipeBtn.textContent = "−";  // minus sign
         deleteRecipeBtn.onclick = () => {
           if(confirm("Delete this recipe?")){
