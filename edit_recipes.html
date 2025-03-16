@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <!-- Added viewport meta tag for mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recipe Editor</title>
   <link rel="stylesheet" href="w3.css">
   <style>
@@ -24,6 +26,25 @@
     }
     .list-item button {
       margin-left: 5px;
+    }
+
+    /* Media query for mobile devices */
+    @media only screen and (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .recipe {
+        margin: 5px 0;
+        padding: 8px;
+      }
+      input.w3-input, .w3-input {
+        font-size: 1em;
+        padding: 8px;
+      }
+      button.w3-button {
+        padding: 8px 12px;
+        font-size: 1em;
+      }
     }
   </style>
 </head>
