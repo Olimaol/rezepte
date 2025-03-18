@@ -107,5 +107,20 @@
       "Couscous dazugeben, umrühren und vom Herd nehmen.",
       "Ca. 5 Minuten quellen lassen, fertig."
     ]
+  },
+  {
+    "title": "Quinoa-Taboulé (4)",
+    "image": "image.png",
+    "ingredients": [
+      "250 g Quinoa",
+      "1/2 Zwiebeln (rot)",
+      "1/2 Gurke",
+      "1 Bund Petersilie",
+      "1 Limette",
+      "2 EL Olivenöl"
+    ],
+    "instructions": [
+      "Quinoa nach Packungsanleitung bissfest garen."
+    ]
   }
 ]
