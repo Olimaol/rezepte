@@ -117,10 +117,34 @@
       "1/2 Gurke",
       "1 Bund Petersilie",
       "1 Limette",
-      "2 EL Olivenöl"
+      "2 EL Olivenöl",
+      "2 Tomaten"
     ],
     "instructions": [
-      "Quinoa nach Packungsanleitung bissfest garen."
+      "Quinoa nach Packungsanleitung bissfest garen.",
+      "Zwiebel, Gurke,  Tomaten, Petersilie würfeln/kleinschneiden und diese in Schüssel.",
+      "Olivenöl, Limettensaft, Salz und Pfeffer dazu und eine Weile in den Kühlschrank.",
+      "Kalte Quinoa zu anderen Zutaten geben und nochmal abschmecken, fertig."
+    ]
+  },
+  {
+    "title": "Ratatouille mit Couscous",
+    "image": "image.png",
+    "ingredients": [
+      "1 Zwiebel",
+      "1 Knoblauchzehe",
+      "1 Zucchini",
+      "2 Paprika",
+      "2 EL Olivenöl",
+      "Thymian",
+      "Oregano",
+      "2 Dosen passierte Tomaten (je 400g)",
+      "250 g Couscous"
+    ],
+    "instructions": [
+      "Zwiebel, Knoblauch, Zucchini, Paprika würfeln und im Topf einige Minuten andünsten.",
+      "Salz, Pfeffer, Kräuter und Tomaten hinzugeben und 20 Minuten köcheln.",
+      "Couscous nach Packungsanleitung garen, alles mischen, fertig."
     ]
   }
 ]
