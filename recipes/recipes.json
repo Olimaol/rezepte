@@ -7,10 +7,11 @@
       "250 g Blattspinat (TK)",
       "200 ml Sahne",
       "350 ml Gemüsebrühe",
-      "Kräuter",
+      "Kräuter (italienisch)",
       "1 Zwiebel",
       "1 Knoblauchzehe",
-      "Parmesan"
+      "50 g Parmesan",
+      "2 EL Olivenöl"
     ],
     "instructions": [
       "Zwiebelwürfel und dann Knoblauch anbraten.",
@@ -18,27 +19,6 @@
       "Salzen, Pfeffern, Kräuter und Muskatnuss hinzufügen.",
       "Köcheln bis Nudeln gar sind.",
       "Parmesan hinzufügen, fertig."
-    ]
-  },
-  {
-    "title": "One Pot Kartoffel-Möhren-Gulasch",
-    "image": "OnePotKartoffel-Möhren-Gulasch.jpg",
-    "ingredients": [
-      "2 Zwiebeln",
-      "750 g Möhren",
-      "750 g Kartoffeln",
-      "125 g Speckwürfel",
-      "200 g Schmand"
-    ],
-    "instructions": [
-      "Zwiebeln, Möhren, Kartoffeln klein schneiden.",
-      "Speckwürfel knusprig braten.",
-      "Zwiebeln mit anbraten.",
-      "Möhren, Kartoffeln und 1 TL Paprikapulver kurz mit andünsten.",
-      "Salzen und Pfeffern.",
-      "1 l Wasser dazu, aufkochen und 3 TL Gemüsebrühe und Oregano dazugeben.",
-      "Alles zugedeckt ca. 15 Minuten kochen.",
-      "Schmand rein, fertig."
     ]
   },
   {
@@ -52,7 +32,9 @@
       "2 rote Chilischoten",
       "500 g Gnocchi (Kühlregal)",
       "1 Dose stückige Tomaten (400 ml)",
-      "200 g Blattspinat (TK)"
+      "200 g Blattspinat (TK)",
+      "1 EL Margarine",
+      "2 EL Olivenöl"
     ],
     "instructions": [
       "Zwiebeln, Knoblauch, Chilis klein schneiden, in Schüssel tun.",
@@ -74,8 +56,9 @@
       "450 ml Rinderfond",
       "1 Dose Tomaten (400 g)",
       "325 g Nudeln",
-      "Kräuter",
-      "150 g Frischkäse (Kräuter)"
+      "Kräuter (italienisch)",
+      "150 g Frischkäse (Kräuter)",
+      "2 EL Olivenöl"
     ],
     "instructions": [
       "Lauch klein schneiden",
@@ -97,7 +80,8 @@
       "2 EL Currypulver",
       "2 TL Harissa",
       "400 ml Gemüsebrühe",
-      "200 g Couscous"
+      "200 g Couscous",
+      "2 EL Olivenöl"
     ],
     "instructions": [
       "Knoblauch und Gemüse klein schneiden.",
@@ -136,8 +120,8 @@
       "1 Zucchini",
       "2 Paprika",
       "2 EL Olivenöl",
-      "Thymian",
-      "Oregano",
+      "2 TL Thymian",
+      "2 TL Oregano",
       "2 Dosen passierte Tomaten (je 400g)",
       "250 g Couscous"
     ],
@@ -145,6 +129,40 @@
       "Zwiebel, Knoblauch, Zucchini, Paprika würfeln und im Topf einige Minuten andünsten.",
       "Salz, Pfeffer, Kräuter und Tomaten hinzugeben und 20 Minuten köcheln.",
       "Couscous nach Packungsanleitung garen, alles mischen, fertig."
+    ]
+  },
+  {
+    "title": "Chilli Sin Carne",
+    "image": "image.png",
+    "ingredients": [
+      "750 ml Gemüsebrühe",
+      "250 g rote Linsen",
+      "3 Knoblauchzehen",
+      "2 Paprika",
+      "1 Zwiebel",
+      "1 Peperoni",
+      "1 Dose Kidneybohnen",
+      "1 Dose Mais",
+      "1 Dose stückige Tomaten (400 g)",
+      "1 Dose passierte Tomaten (400 g)",
+      "3 EL Olivenöl",
+      "2 EL Tomatenmark",
+      "2 TL Paprikapulver",
+      "1,5 TL Kreuzkümmel",
+      "1 TL Salz",
+      "1/2 TL Cayennepfeffer",
+      "1 Prise Zucker",
+      "250 g Reis"
+    ],
+    "instructions": [
+      "Knoblauch, Paprika, Zwiebel, Peperonie würfeln, Zwiebeln separieren.",
+      "Zweibeln in großem Topf andünsten danach restliche Gemüsewürfel 3 Minuten andünsten.",
+      "Rote Linsen & Tomatenmark hinzugeben, kurz mitdünsten.",
+      "Gemüsebrühe, stückige und passierte Tomaten, Kidneybohnen und Mais hinzugeben.",
+      "Paprikapulver, Kreuzkümmel, Salz, Cayennepfeffer, Zucker hinzugeben.",
+      "Offen ca. 15 Minuten köcheln.",
+      "Reis nach Packungsanleitung garen.",
+      "Alles mischen, fertig."
     ]
   }
 ]
