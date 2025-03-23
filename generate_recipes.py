@@ -80,13 +80,13 @@ def calculate_totals(nutrition_data):
         "nf_calories",
         "nf_total_fat",
         "nf_saturated_fat",
-        "nf_cholesterol",
-        "nf_sodium",
+        # "nf_cholesterol",
+        # "nf_sodium",
         "nf_total_carbohydrate",
-        "nf_dietary_fiber",
+        # "nf_dietary_fiber",
         "nf_sugars",
         "nf_protein",
-        "nf_potassium",
+        # "nf_potassium",
     ]
 
     totals = {field: 0.0 for field in fields}
@@ -94,7 +94,9 @@ def calculate_totals(nutrition_data):
     foods = nutrition_data.get("foods", [])
     for food in foods:
         for field in fields:
-            totals[field] += food.get(field, 0)
+            val = food.get(field, 0.0)
+            val = val if val is not None else 0.0
+            totals[field] += val
 
     # round the totals to two decimal places
     totals = {field: round(value, 2) for field, value in totals.items()}
