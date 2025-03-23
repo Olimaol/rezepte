@@ -90,6 +90,15 @@
     // Global variable to hold the recipes JSON data
     let recipesData = [];
     
+    // Parse query parameter for recipe index.
+    let urlParams = new URLSearchParams(window.location.search);
+    let singleRecipeIndex = urlParams.get("index");
+    if(singleRecipeIndex !== null) {
+      singleRecipeIndex = parseInt(singleRecipeIndex);
+      // Optionally hide the Add New Recipe button when editing a single recipe.
+      document.getElementById("addRecipeBtn").style.display = "none";
+    }
+
     // -------------------------------
     // Fetch the recipes JSON from the file with a cache-busting query parameter
     // -------------------------------
@@ -110,11 +119,13 @@
     function renderRecipes() {
       const editor = document.getElementById("editor");
       editor.innerHTML = "";
-      recipesData.forEach((recipe, recipeIndex) => {
+      recipesData.forEach((recipe, recipeIdx) => {
+        // If a single recipe index is specified, only render that one.
+        if (singleRecipeIndex !== null && recipeIdx !== singleRecipeIndex) return;
         // Create a container for each recipe
         const recipeDiv = document.createElement("div");
         recipeDiv.className = "recipe w3-card-4 w3-padding";
-        recipeDiv.setAttribute("data-index", recipeIndex);
+        recipeDiv.setAttribute("data-index", recipeIdx);
 
         // Header: editable title and delete button for the recipe
         const headerDiv = document.createElement("div");
@@ -129,7 +140,7 @@
         titleInput.value = recipe.title;
         titleInput.placeholder = "Recipe Title";
         titleInput.oninput = (e) => {
-          recipesData[recipeIndex].title = e.target.value;
+          recipesData[recipeIdx].title = e.target.value;
         };
         
         const deleteRecipeBtn = document.createElement("button");
@@ -139,7 +150,7 @@
         deleteRecipeBtn.textContent = "−";  // minus sign
         deleteRecipeBtn.onclick = () => {
           if(confirm("Delete this recipe?")){
-            recipesData.splice(recipeIndex, 1);
+            recipesData.splice(recipeIdx, 1);
             renderRecipes();
           }
         };
@@ -159,7 +170,7 @@
         imageInput.value = recipe.image;
         imageInput.placeholder = "Image URL";
         imageInput.oninput = (e) => {
-          recipesData[recipeIndex].image = e.target.value;
+          recipesData[recipeIdx].image = e.target.value;
         };
         imageDiv.appendChild(imageLabel);
         imageDiv.appendChild(imageInput);
@@ -172,7 +183,7 @@
         ingLabel.textContent = "Ingredients:";
         ingDiv.appendChild(ingLabel);
         recipe.ingredients.forEach((ing, ingIndex) => {
-          const ingItem = createListItem(recipeIndex, "ingredients", ingIndex, ing);
+          const ingItem = createListItem(recipeIdx, "ingredients", ingIndex, ing);
           ingDiv.appendChild(ingItem);
         });
         // Button to add a new ingredient
@@ -180,7 +191,7 @@
         addIngBtn.className = "w3-button w3-green w3-small";
         addIngBtn.textContent = "+ Add Ingredient";
         addIngBtn.onclick = () => {
-          recipesData[recipeIndex].ingredients.push("");
+          recipesData[recipeIdx].ingredients.push("");
           renderRecipes();
         };
         ingDiv.appendChild(addIngBtn);
@@ -193,7 +204,7 @@
         instrLabel.textContent = "Instructions:";
         instrDiv.appendChild(instrLabel);
         recipe.instructions.forEach((instr, instrIndex) => {
-          const instrItem = createListItem(recipeIndex, "instructions", instrIndex, instr);
+          const instrItem = createListItem(recipeIdx, "instructions", instrIndex, instr);
           instrDiv.appendChild(instrItem);
         });
         // Button to add a new instruction
@@ -201,7 +212,7 @@
         addInstrBtn.className = "w3-button w3-green w3-small";
         addInstrBtn.textContent = "+ Add Instruction";
         addInstrBtn.onclick = () => {
-          recipesData[recipeIndex].instructions.push("");
+          recipesData[recipeIdx].instructions.push("");
           renderRecipes();
         };
         instrDiv.appendChild(addInstrBtn);
@@ -214,7 +225,7 @@
     // -------------------------------
     // Create a list item for ingredients or instructions
     // -------------------------------
-    function createListItem(recipeIndex, key, itemIndex, value) {
+    function createListItem(recipeIdx, key, itemIndex, value) {
       const itemDiv = document.createElement("div");
       itemDiv.className = "list-item";
       
@@ -223,14 +234,14 @@
       itemInput.className = "w3-input";
       itemInput.value = value;
       itemInput.oninput = (e) => {
-        recipesData[recipeIndex][key][itemIndex] = e.target.value;
+        recipesData[recipeIdx][key][itemIndex] = e.target.value;
       };
       
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "w3-button w3-red";
       deleteBtn.textContent = "−";
       deleteBtn.onclick = () => {
-        recipesData[recipeIndex][key].splice(itemIndex, 1);
+        recipesData[recipeIdx][key].splice(itemIndex, 1);
         renderRecipes();
       };
       

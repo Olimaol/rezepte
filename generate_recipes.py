@@ -132,7 +132,10 @@ for index, recipe in enumerate(recipes):
         nutrition_totals = None
     output_path = os.path.join(output_dir, f"{index}.html")
     with open(output_path, "w", encoding="utf-8") as output_file:
-        output_file.write(template.render(recipe=recipe, nutrition=nutrition_totals))
+        # Pass index as additional variable for the template.
+        output_file.write(
+            template.render(recipe=recipe, nutrition=nutrition_totals, index=index)
+        )
 
 # Generate index.html
 index_template = env.get_template("index_template.html")
