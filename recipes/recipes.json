@@ -166,5 +166,26 @@
       "Reis nach Packungsanleitung garen.",
       "Alles mischen, fertig."
     ]
+  },
+  {
+    "title": "Kichererbsen Quinoa Salat",
+    "image": "kichererbsenquinoasalat.jpg",
+    "ingredients": [
+      "260 g Kichererbsen (1 Dose)",
+      "1 Zwiebel (klein)",
+      "2 Tomaten",
+      "100 g Feta",
+      "2 EL Petersilie (TK)",
+      "2 EL Olivenöl",
+      "1 Zitrone",
+      "1 Knoblauchzehe",
+      "100 g Quinoa"
+    ],
+    "instructions": [
+      "Quinoa nach Packungsanleitung garen.",
+      "Zitrone pressen, Gemüse würfeln.",
+      "Alles mischen & mit Salz, Pfeffer und Chilli würzen.",
+      "Quinoa untermischen, sobal kalt, fertig."
+    ]
   }
 ]
