@@ -187,5 +187,30 @@
       "Alles mischen & mit Salz, Pfeffer und Chilli würzen.",
       "Quinoa untermischen, sobal kalt, fertig."
     ]
+  },
+  {
+    "title": "Kartoffeln mexikanisch",
+    "image": "image.png",
+    "ingredients": [
+      "400g Hähnchenbrust",
+      "1 EL Öl",
+      "2 Zwiebeln",
+      "2 Knoblauchzehen",
+      "50 g Tomatenmark",
+      "500 g Kartoffeln",
+      "350 ml Rinderbrühe",
+      "255 g Kidneybohnen",
+      "285 g Mais",
+      "Gewürzmischung (mexikanisch)"
+    ],
+    "instructions": [
+      "Kartoffeln schälen und in Spalten schneiden.",
+      "Zwiebeln und Knoblauch würfeln.",
+      "Fleisch in Streifen schneiden und kurz scharf anbraten.",
+      "Zwiebeln und Knoblauch kurz mitdünsten.",
+      "Tomatenmark, Gewürz, Kartoffeln und Brühe dazugeben. 20 min köcheln.",
+      "Mais und Bohnen dazugeben. 10 min köcheln.",
+      "Mit Salz und Pfeffer abschmecken. Fertig."
+    ]
   }
 ]
