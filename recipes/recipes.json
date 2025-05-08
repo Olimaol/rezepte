@@ -212,5 +212,33 @@
       "Mais und Bohnen dazugeben. 10 min köcheln.",
       "Mit Salz und Pfeffer abschmecken. Fertig."
     ]
+  },
+  {
+    "title": "Kesselgulasch",
+    "image": "image.png",
+    "ingredients": [
+      "600 g Rindergulasch (Schulter)",
+      "2 Zwiebeln (groß)",
+      "2 Paprika",
+      "300 g Kartoffeln",
+      "2 Knoblauchzehen",
+      "4 EL Schweineschmalz",
+      "2 EL Tomatenmark",
+      "2 EL Paprikapulver (edelsüß)",
+      "1 TL Paprikapulver (scharf)",
+      "400 g stückige Tomaten",
+      "1 TL Kümmel"
+    ],
+    "instructions": [
+      "Zwiebeln, Knoblauch, Fleisch würfeln.",
+      "Zwiebeln goldbraun in Schmalz braten.",
+      "Hitze reduzieren, Tomatenmark und Paprikapulver dazu, kurz mitdünsten.",
+      "Fleisch mit Zwiebelmischung vermengen.",
+      "Knoblauch, 1 TL Salz, 1 TL Pfeffer, 1 TL Kümmel hinzu",
+      "Mit Wasser aufgießen. 2,5 h köcheln.",
+      "In der Zwischenzeit Kartoffeln und Paprika würfeln.",
+      "Kartoffeln, Paprika, Dosentomaten hinzugeben, 30 min köcheln.",
+      "Abschmecken, fertig."
+    ]
   }
 ]
