@@ -240,5 +240,26 @@
       "Kartoffeln, Paprika, Dosentomaten hinzugeben, 30 min köcheln.",
       "Abschmecken, fertig."
     ]
+  },
+  {
+    "title": "Frikassee mit Huhn",
+    "image": "image.png",
+    "ingredients": [
+      "600 g Hähnchenbrustfilet",
+      "200 g Reis",
+      "2 EL Butter",
+      "2 EL Mehl",
+      "300 g Erbsen (TK)",
+      "200 ml Kochsahne (fettreduziert)",
+      "Muskat",
+      "Zitronensaft"
+    ],
+    "instructions": [
+      "Hähnchen in 750 ml Salzwasser aufkochen und 35 min köcheln. Danach Brühe aufheben und Hähnchen würfeln.",
+      "Reis nach Packungsanleitung garen.",
+      "2 EL Butter schmelzen und mit 2 EL Mehl verrühren. Brühe aufgießen. Aufkochen.",
+      "Hähnchen, Erbsen, Kochsahne hinzugeben.",
+      "5 Minuten köcheln, mit Salz, Pfeffer, Muskat und Zitronensaft abschmecken, fertig."
+    ]
   }
 ]
