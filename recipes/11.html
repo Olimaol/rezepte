@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../w3.css">
+    <title>Kichererbsen-Curry</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+
+    <!-- Navbar -->
+    <div class="w3-bar w3-teal">
+        <a href="../index.html" class="w3-bar-item w3-button">Home</a>
+        <!-- Changed Editor link to pass recipe index -->
+        <a href="../edit_recipes.html?index=11" class="w3-bar-item w3-button">Editor</a>
+    </div>
+
+    <!-- Recipe Container -->
+    <div itemtype="http://schema.org/Recipe">
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 id="recipe-name" itemprop="name">Kichererbsen-Curry</h1>
+                <img id="recipe-image" itemprop="image" src="../images/image.png" alt="Recipe Image" class="recipe-image">
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul id="recipe-ingredients" class="ingredients">
+                    
+                    <li itemprop="recipeIngredient">520 g Kichererbsen (2 Dosen)</li>
+                    
+                    <li itemprop="recipeIngredient">30 g Ingwer</li>
+                    
+                    <li itemprop="recipeIngredient">2 Knoblauchzehen</li>
+                    
+                    <li itemprop="recipeIngredient">1 Chillischote</li>
+                    
+                    <li itemprop="recipeIngredient">3 EL Rapsöl</li>
+                    
+                    <li itemprop="recipeIngredient">2 Zwiebeln</li>
+                    
+                    <li itemprop="recipeIngredient">400 g stückige Tomaten</li>
+                    
+                    <li itemprop="recipeIngredient">1 EL Tomatenmark</li>
+                    
+                    <li itemprop="recipeIngredient">1 TL Garam Masala</li>
+                    
+                    <li itemprop="recipeIngredient">1 TL Kreuzkümmel</li>
+                    
+                    <li itemprop="recipeIngredient">0.5 TL Cayennepfeffer</li>
+                    
+                    <li itemprop="recipeIngredient">0.25 TL Kurkuma</li>
+                    
+                </ul>
+                <div data-bring-import style="display:none">
+                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+                </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol id="recipe-instructions" itemprop="recipeInstructions">
+                    
+                    <li>Todo</li>
+                    
+                </ol>
+            </div>
+
+            <!-- Nutritional Information Section -->
+            <div class="recipe-section">
+                <h3>Nährwerte</h3>
+                
+                <ul>
+                    <li>Kalorien: 1993.77 kcal</li>
+                    <li>Fett: 92.09 g</li>
+                    <ul>
+                        <li>gesättigte Fettsäuren: 15.76 g</li>
+                    </ul>
+                    <li>Kohlenhydrate: 215.91 g</li>
+                    <ul>
+                        <li>Zucker: 47.25 g</li>
+                    </ul>
+                    <li>Eiweiß: 89.82 g</li>
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+
+    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+</body>
+</html>
