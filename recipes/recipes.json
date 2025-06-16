@@ -261,5 +261,26 @@
       "Hähnchen, Erbsen, Kochsahne hinzugeben.",
       "5 Minuten köcheln, mit Salz, Pfeffer, Muskat und Zitronensaft abschmecken, fertig."
     ]
+  },
+  {
+    "title": "Kichererbsen-Curry",
+    "image": "image.png",
+    "ingredients": [
+      "520 g Kichererbsen (2 Dosen)",
+      "30 g Ingwer",
+      "2 Knoblauchzehen",
+      "1 Chillischote",
+      "3 EL Rapsöl",
+      "2 Zwiebeln",
+      "400 g stückige Tomaten",
+      "1 EL Tomatenmark",
+      "1 TL Garam Masala",
+      "1 TL Kreuzkümmel",
+      "0.5 TL Cayennepfeffer",
+      "0.25 TL Kurkuma"
+    ],
+    "instructions": [
+      "Todo"
+    ]
   }
 ]
