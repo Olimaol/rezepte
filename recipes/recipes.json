@@ -289,5 +289,33 @@
       "Garam Masala, Kreuzkümmel, Cayennepfeffer, Kurkuma un 1.5 TL Salz einrühren.",
       "Kichererbsen hinzu, 5 Minuten köcheln, abschmecken. Fertig."
     ]
+  },
+  {
+    "title": "Weißer Riesenbohnentopf",
+    "image": "image.png",
+    "ingredients": [
+      "2 Knoblauchzehen",
+      "2 Zwiebel",
+      "2 EL Olivenöl",
+      "2 Paprikaschote",
+      "200 g Kartoffeln",
+      "500 g Riesenbohnen (2 Dosen)",
+      "800 g stückige Tomaten",
+      "250 ml Rinderfond",
+      "2 TL Paprikapulver (edelsüß)",
+      "2 TL Honig",
+      "2 TL Majoran ",
+      "1 TL Thymian",
+      "250 g Reis"
+    ],
+    "instructions": [
+      "Knoblauch, Zwiebeln, Paprika, Kartoffeln würfeln.",
+      "Zwiebeln glasig anbraten.",
+      "Restliche Würfel mitbraten.",
+      "Rinderbrühe dazu.",
+      "2 TL Paprikapulver, 2 TL Majoran, 1 TL Thymian dazu, 10 min köcheln.",
+      "Tomaten, 2 TL Honig, Bohnen dazu und 30 min köcheln.",
+      "Reis kochen, fertig."
+    ]
   }
 ]
