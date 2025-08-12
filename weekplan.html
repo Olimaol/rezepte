@@ -6,18 +6,21 @@
   <link rel="stylesheet" href="./w3.css">
   <title>Wochenplan</title>
   <style>
-    body { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
-    .container { max-width: 900px; margin: 20px auto; padding: 12px; }
-    .carousel { position: relative; overflow: hidden; border-radius:8px; touch-action: pan-y; } /* allow JS handling of horizontal swipes */
+    /* --- Page layout --- */
+    body { margin: 0; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .container { max-width: 900px; margin: 20px auto; padding: 12px; box-sizing: border-box; }
+
+    /* --- Carousel --- */
+    .carousel { position: relative; overflow: hidden; border-radius:8px; touch-action: pan-y; }
     .slides { display:flex; transition: transform 300ms ease; will-change: transform; z-index: 0; }
-    .slide { min-width:100%; padding:16px; box-sizing:border-box; background:#fff; border:1px solid #e6e6e6; }
+    .slide { min-width:100%; flex: 0 0 100%; padding:16px; box-sizing:border-box; background:#fff; border:1px solid #e6e6e6; }
     .week-title { font-weight:600; margin-bottom:8px; }
     .recipe-list { list-style:none; padding:0; margin:0; }
     .recipe-list li { display:flex; align-items:center; gap:12px; padding:8px; border-radius:6px; }
     .recipe-list li a { text-decoration:none; color:#111; flex:1; }
     .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
 
-    /* Arrows: z-index above slides so they are clickable and visible */
+    /* --- Arrows --- */
     .arrow {
       position:absolute;
       top:50%;
@@ -50,10 +53,19 @@
 
     .remove-btn { background:#e74c3c; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; }
 
-    /* Small controls */
-    .controls { display:flex; gap:10px; align-items:center; margin-top:12px; }
-    .sync-form { display:flex; gap:8px; align-items:center; }
-    .weeks-nav { margin-bottom:8px; }
+    /* --- Controls (sync) --- */
+    .controls { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+    .sync-form { display:flex; gap:8px; align-items:center; margin-left:auto; }
+    .sync-form input { max-width:180px; width:100%; box-sizing:border-box; padding:6px 8px; }
+    .sync-form button { white-space:nowrap; }
+
+    /* small helper for narrow screens */
+    @media (max-width:600px) {
+      .container { margin: 0; padding: 10px; max-width: 100%; }
+      /* prevent any accidental horizontal scrolling on small screens */
+      html, body { overflow-x: hidden; }
+      .recipe-thumb { width:48px; height:36px; }
+    }
 
     /* accessibility focus */
     .arrow:focus { outline: 3px solid rgba(255,255,255,0.25); }
@@ -67,8 +79,8 @@
 
   <div class="container">
     <h1>Wochenplan</h1>
-    <p>Aktuelle Woche und die letzten zwei Wochen. Tippen/ziehen oder klicke die Pfeile (Desktop: erscheinen beim Hovern) um zu wechseln.</p>
 
+    <!-- Carousel (no paragraph above, as requested) -->
     <div class="carousel" id="carousel" aria-roledescription="carousel">
       <button class="arrow left" id="arrowLeft" aria-label="Vorherige Woche">◀</button>
       <button class="arrow right" id="arrowRight" aria-label="Nächste Woche">▶</button>
@@ -76,8 +88,8 @@
     </div>
 
     <div class="controls">
-      <div class="weeks-nav"><strong>Gezeigte Wochen:</strong> <span id="weeksShown"></span></div>
-      <div class="sync-form" style="margin-left:auto;">
+      <div style="font-size:0.95rem;color:#333;">Angezeigte Wochen: Aktuelle Woche und die letzten zwei Wochen</div>
+      <div class="sync-form" aria-hidden="false">
         <input id="githubToken" type="password" placeholder="GitHub Token (optional)">
         <button id="syncBtn" class="w3-button w3-blue">Sync to GitHub</button>
         <span id="syncStatus" style="margin-left:8px;color:#666;font-size:0.95rem;"></span>
@@ -129,12 +141,10 @@
     function buildSlidesFromPlan(plan) {
       const slides = document.getElementById('slides'); slides.innerHTML = '';
       const offsets = getWeekOffsets();
-      const weeksShown = document.getElementById('weeksShown'); weeksShown.textContent = '';
       offsets.forEach(off => {
         const d = new Date(); d.setDate(d.getDate() + off*7);
         const key = isoWeekKey(d);
-        const title = `${key}`;
-        weeksShown.textContent += title + (off === 0 ? ' (aktuell) ' : ' ');
+        const title = key;
 
         const slide = document.createElement('div'); slide.className = 'slide';
         const h = document.createElement('div'); h.className = 'week-title'; h.textContent = title; slide.appendChild(h);
@@ -166,7 +176,7 @@
 
     // Top-level load: try GitHub remote, then localStorage fallback.
     async function initialLoadAndRender() {
-      // start with local so page is responsive quickly
+      // Render immediately from local so user sees something quickly
       const local = loadPlanLocal();
       buildSlidesFromPlan(local);
 
@@ -213,8 +223,8 @@
     let resizeTimeout = null;
     window.addEventListener('resize', ()=>{ clearTimeout(resizeTimeout); resizeTimeout = setTimeout(()=> showCurrent(), 120); });
 
-    document.getElementById('arrowLeft').addEventListener('click', ()=>{ if(current>0) current--; showCurrent(); });
-    document.getElementById('arrowRight').addEventListener('click', ()=>{ if(current < slidesEl.children.length-1) current++; showCurrent(); });
+    document.getElementById('arrowLeft').addEventListener('click', (ev)=>{ ev.stopPropagation(); if(current>0) current--; showCurrent(); });
+    document.getElementById('arrowRight').addEventListener('click', (ev)=>{ ev.stopPropagation(); if(current < slidesEl.children.length-1) current++; showCurrent(); });
 
     // Helper to center after rebuild
     function centerToCurrent(){
@@ -319,6 +329,7 @@
           document.getElementById('syncStatus').textContent = 'Daten geladen von GitHub (remote)';
         } else {
           // nothing remote; remain with local
+          document.getElementById('syncStatus').textContent = '';
         }
       } catch (e) {
         console.warn('remote load failed', e);
