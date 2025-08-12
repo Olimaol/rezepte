@@ -2,55 +2,44 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- Added viewport meta tag for mobile responsiveness -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recipe Editor</title>
+  <title>Recipe Editor — Improved</title>
   <link rel="stylesheet" href="w3.css">
   <style>
-    /* Additional custom styling */
-    .recipe {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 10px 0;
-    }
-    .field-group {
-      margin-bottom: 10px;
-    }
-    .list-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-    }
-    .list-item input {
-      flex: 1;
-    }
-    .list-item button {
-      margin-left: 5px;
+    /* --- Layout & card styling --- */
+    body { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .recipe { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #fff; }
+    .field-group { margin-bottom: 12px; }
+    .list-container { margin-top: 6px; }
+    .list-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; padding:6px; border-radius:6px; background: #fafafa; }
+    .list-item input { flex: 1; min-width: 80px; }
+    .list-item button { flex: 0 0 auto; }
+
+    /* Drag handle on the right */
+    .drag-handle { cursor: grab; padding: 6px 8px; border-radius:4px; background: #eee; user-select: none; }
+    .drag-handle:active { cursor: grabbing; }
+    .dragging { opacity: 0.6; }
+
+    /* Image preview */
+    .image-preview { max-width: 120px; max-height: 80px; object-fit: cover; border-radius: 6px; margin-left:8px; border:1px solid #ddd; }
+
+    /* Responsive tweaks */
+    @media only screen and (max-width: 600px) {
+      .recipe { margin: 6px 0; padding: 8px; }
+      .image-preview { max-width: 90px; max-height: 60px; }
+      .drag-handle { padding: 8px; }
     }
 
-    /* Media query for mobile devices */
-    @media only screen and (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-      .recipe {
-        margin: 5px 0;
-        padding: 8px;
-      }
-      input.w3-input, .w3-input {
-        font-size: 1em;
-        padding: 8px;
-      }
-      button.w3-button {
-        padding: 8px 12px;
-        font-size: 1em;
-      }
-    }
+    /* Small accessibility focus styles */
+    .list-item:focus-within { box-shadow: 0 0 0 3px rgba(0,123,255,0.12); }
+
+    /* Up/down buttons for accessibility */
+    .move-btn { padding: 6px 8px; }
+
+    .top-actions { display:flex; gap:8px; align-items:center; margin:8px 0; }
   </style>
 </head>
 <body class="w3-light-grey">
-
-  <!-- Navbar -->
   <div class="w3-bar w3-teal">
     <a href="index.html" class="w3-bar-item w3-button">Home</a>
   </div>
@@ -58,266 +47,317 @@
   <header class="w3-container w3-teal w3-center w3-padding-32">
     <h1>Rezepteditor</h1>
   </header>
-  
-  <!-- Wrap GitHub token form in a card for consistent styling -->
+
   <div class="w3-card-4 w3-margin w3-padding">
     <form id="githubForm" action="about:blank" method="post" target="dummyFrame" onsubmit="pushChanges();">
       <div class="w3-panel w3-border w3-padding">
         <label for="githubToken">GitHub Token (for pushing changes):</label>
-        <!-- Using autocomplete attribute to help the browser identify this as a password field -->
         <input type="password" id="githubToken" name="githubToken" class="w3-input" autocomplete="current-password" placeholder="Enter GitHub token">
       </div>
       <button type="submit" class="w3-button w3-blue w3-margin">Save Changes (Push to GitHub)</button>
+      <button id="exportJsonBtn" type="button" class="w3-button w3-light-grey w3-margin">Export JSON</button>
+      <button id="importJsonBtn" type="button" class="w3-button w3-light-grey w3-margin">Import JSON</button>
+      <span id="autosaveStatus" style="margin-left:12px; color:#666; font-size:0.9em;"></span>
     </form>
   </div>
-  <!-- Hidden iframe so that the form submission doesn’t navigate away from the page -->
+
+  <div id="editor" class="w3-margin"></div>
+  <div class="top-actions w3-margin">
+    <button id="addRecipeBtn" class="w3-button w3-green">+ Add New Recipe</button>
+    <button id="loadSampleBtn" class="w3-button w3-blue">Load Sample</button>
+  </div>
+
   <iframe name="dummyFrame" style="display:none;"></iframe>
-  
-  <!-- Container where the recipes editor will be rendered -->
-  <div id="editor"></div>
-  
-  <!-- Button to add new recipes -->
-  <button id="addRecipeBtn" class="w3-button w3-green w3-margin">+ Add New Recipe</button>
-  
+
+  <!-- SortableJS (small, dependency-free) for robust drag & drop on mouse + touch -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
   <script>
     // -------------------------------
-    // Configuration – update these!
+    // Configuration
     // -------------------------------
-    const repoOwner = "Olimaol";  // <-- Replace with your GitHub username
-    const repoName = "rezepte";         // <-- Replace with your repository name
+    const repoOwner = "Olimaol";
+    const repoName = "rezepte";
     const filePath = "recipes/recipes.json";
 
-    // Global variable to hold the recipes JSON data
     let recipesData = [];
-    
-    // Parse query parameter for recipe index.
     let urlParams = new URLSearchParams(window.location.search);
     let singleRecipeIndex = urlParams.get("index");
-    if(singleRecipeIndex !== null) {
+    if (singleRecipeIndex !== null) {
       singleRecipeIndex = parseInt(singleRecipeIndex);
-      // Optionally hide the Add New Recipe button when editing a single recipe.
       document.getElementById("addRecipeBtn").style.display = "none";
     }
 
     // -------------------------------
-    // Fetch the recipes JSON from the file with a cache-busting query parameter
+    // Local storage helpers (autosave)
+    // -------------------------------
+    const LS_KEY = 'recipesEditorData_v1';
+    function saveLocal() {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(recipesData));
+        const el = document.getElementById('autosaveStatus');
+        if (el) el.textContent = 'Autosaved ' + new Date().toLocaleTimeString();
+      } catch(e) { console.warn('Could not save to localStorage', e); }
+    }
+    function loadLocal() {
+      try {
+        const v = localStorage.getItem(LS_KEY);
+        if (!v) return null;
+        return JSON.parse(v);
+      } catch(e){ return null; }
+    }
+
+    // -------------------------------
+    // Fetch recipes.json (with fallback to localStorage/sample)
     // -------------------------------
     async function fetchRecipes() {
       try {
-        // Append a timestamp to force a fresh fetch
-        const response = await fetch(filePath + '?t=' + new Date().getTime(), {cache: "no-store"});
+        const response = await fetch(filePath + '?t=' + new Date().getTime(), {cache: 'no-store'});
+        if (!response.ok) throw new Error('Fetch failed');
         recipesData = await response.json();
         renderRecipes();
-      } catch (error) {
-        console.error("Error fetching recipes:", error);
+        saveLocal();
+      } catch (e) {
+        console.warn('Could not load file, falling back to localStorage/sample', e);
+        const local = loadLocal();
+        if (local) {
+          recipesData = local;
+        } else {
+          recipesData = [
+            { title: 'Sample Pancakes', image: '', ingredients: ['200g flour', '300ml milk', '2 eggs'], instructions: ['Mix ingredients', 'Fry in pan'] }
+          ];
+        }
+        renderRecipes();
       }
     }
-    
+
     // -------------------------------
-    // Render the recipes editor view
+    // Render function
     // -------------------------------
     function renderRecipes() {
-      const editor = document.getElementById("editor");
-      editor.innerHTML = "";
+      const editor = document.getElementById('editor');
+      editor.innerHTML = '';
       recipesData.forEach((recipe, recipeIdx) => {
-        // If a single recipe index is specified, only render that one.
         if (singleRecipeIndex !== null && recipeIdx !== singleRecipeIndex) return;
-        // Create a container for each recipe
-        const recipeDiv = document.createElement("div");
-        recipeDiv.className = "recipe w3-card-4 w3-padding";
-        recipeDiv.setAttribute("data-index", recipeIdx);
 
-        // Header: editable title and delete button for the recipe
-        const headerDiv = document.createElement("div");
-        headerDiv.className = "w3-container w3-light-grey";
-        headerDiv.style.display = "flex";
-        headerDiv.style.alignItems = "center";
-        
-        const titleInput = document.createElement("input");
-        titleInput.type = "text";
-        titleInput.className = "w3-input";
-        titleInput.style.flexGrow = "1"; // Added to allow the input to fill available space
-        titleInput.value = recipe.title;
-        titleInput.placeholder = "Recipe Title";
-        titleInput.oninput = (e) => {
-          recipesData[recipeIdx].title = e.target.value;
-        };
-        
-        const deleteRecipeBtn = document.createElement("button");
-        deleteRecipeBtn.className = "w3-button w3-red";
-        // Removed w3-right; add marginLeft to separate from title
-        deleteRecipeBtn.style.marginLeft = "10px";
-        deleteRecipeBtn.textContent = "−";  // minus sign
-        deleteRecipeBtn.onclick = () => {
-          if(confirm("Delete this recipe?")){
-            recipesData.splice(recipeIdx, 1);
-            renderRecipes();
-          }
-        };
-        
+        const recipeDiv = document.createElement('div');
+        recipeDiv.className = 'recipe w3-card-4 w3-padding';
+        recipeDiv.setAttribute('data-index', recipeIdx);
+
+        // Header
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'w3-container w3-light-grey';
+        headerDiv.style.display = 'flex';
+        headerDiv.style.alignItems = 'center';
+
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text'; titleInput.className = 'w3-input'; titleInput.style.flexGrow = '1';
+        titleInput.value = recipe.title || '';
+        titleInput.placeholder = 'Recipe Title';
+        titleInput.oninput = (e) => { recipesData[recipeIdx].title = e.target.value; saveLocal(); };
+
+        const deleteRecipeBtn = document.createElement('button');
+        deleteRecipeBtn.className = 'w3-button w3-red'; deleteRecipeBtn.style.marginLeft = '10px'; deleteRecipeBtn.textContent = '−';
+        deleteRecipeBtn.onclick = () => { if(confirm('Delete this recipe?')){ recipesData.splice(recipeIdx,1); renderRecipes(); saveLocal(); } };
+
         headerDiv.appendChild(titleInput);
         headerDiv.appendChild(deleteRecipeBtn);
         recipeDiv.appendChild(headerDiv);
-        
-        // Image URL field
-        const imageDiv = document.createElement("div");
-        imageDiv.className = "field-group";
-        const imageLabel = document.createElement("label");
-        imageLabel.textContent = "Image URL:";
-        const imageInput = document.createElement("input");
-        imageInput.type = "text";
-        imageInput.className = "w3-input";
-        imageInput.value = recipe.image;
-        imageInput.placeholder = "Image URL";
-        imageInput.oninput = (e) => {
-          recipesData[recipeIdx].image = e.target.value;
-        };
-        imageDiv.appendChild(imageLabel);
-        imageDiv.appendChild(imageInput);
+
+        // Image field + preview
+        const imageDiv = document.createElement('div'); imageDiv.className = 'field-group';
+        const imageLabel = document.createElement('label'); imageLabel.textContent = 'Image URL:';
+        const imageRow = document.createElement('div'); imageRow.style.display = 'flex'; imageRow.style.alignItems = 'center';
+        const imageInput = document.createElement('input'); imageInput.type = 'text'; imageInput.className = 'w3-input'; imageInput.value = recipe.image || '';
+        imageInput.placeholder = 'Image URL';
+        const imgPreview = document.createElement('img'); imgPreview.className = 'image-preview'; imgPreview.alt = '';
+        if (recipe.image) imgPreview.src = recipe.image; else imgPreview.style.display = 'none';
+        imageInput.oninput = (e) => { recipesData[recipeIdx].image = e.target.value; if (e.target.value) { imgPreview.src = e.target.value; imgPreview.style.display = ''; } else imgPreview.style.display = 'none'; saveLocal(); };
+        imageRow.appendChild(imageInput); imageRow.appendChild(imgPreview);
+        imageDiv.appendChild(imageLabel); imageDiv.appendChild(imageRow);
         recipeDiv.appendChild(imageDiv);
-        
-        // Ingredients list
-        const ingDiv = document.createElement("div");
-        ingDiv.className = "field-group";
-        const ingLabel = document.createElement("label");
-        ingLabel.textContent = "Ingredients:";
-        ingDiv.appendChild(ingLabel);
-        recipe.ingredients.forEach((ing, ingIndex) => {
-          const ingItem = createListItem(recipeIdx, "ingredients", ingIndex, ing);
-          ingDiv.appendChild(ingItem);
-        });
-        // Button to add a new ingredient
-        const addIngBtn = document.createElement("button");
-        addIngBtn.className = "w3-button w3-green w3-small";
-        addIngBtn.textContent = "+ Add Ingredient";
-        addIngBtn.onclick = () => {
-          recipesData[recipeIdx].ingredients.push("");
-          renderRecipes();
-        };
-        ingDiv.appendChild(addIngBtn);
-        recipeDiv.appendChild(ingDiv);
-        
-        // Instructions list
-        const instrDiv = document.createElement("div");
-        instrDiv.className = "field-group";
-        const instrLabel = document.createElement("label");
-        instrLabel.textContent = "Instructions:";
-        instrDiv.appendChild(instrLabel);
-        recipe.instructions.forEach((instr, instrIndex) => {
-          const instrItem = createListItem(recipeIdx, "instructions", instrIndex, instr);
-          instrDiv.appendChild(instrItem);
-        });
-        // Button to add a new instruction
-        const addInstrBtn = document.createElement("button");
-        addInstrBtn.className = "w3-button w3-green w3-small";
-        addInstrBtn.textContent = "+ Add Instruction";
-        addInstrBtn.onclick = () => {
-          recipesData[recipeIdx].instructions.push("");
-          renderRecipes();
-        };
-        instrDiv.appendChild(addInstrBtn);
-        recipeDiv.appendChild(instrDiv);
-        
+
+        // Helper to create list (ingredients/instructions)
+        function buildList(key, labelText, addButtonText) {
+          const group = document.createElement('div'); group.className = 'field-group';
+          const label = document.createElement('label'); label.textContent = labelText; group.appendChild(label);
+
+          const listContainer = document.createElement('div'); listContainer.className = 'list-container';
+
+          // create each item (with dataset index and dynamic handlers)
+          (recipe[key] || []).forEach((val, itemIndex) => {
+            const item = createListItem(recipeIdx, key, itemIndex, val);
+            listContainer.appendChild(item);
+          });
+
+          // Add button
+          const addBtn = document.createElement('button'); addBtn.className = 'w3-button w3-green w3-small'; addBtn.textContent = addButtonText;
+          addBtn.onclick = () => {
+            recipesData[recipeIdx][key] = recipesData[recipeIdx][key] || [];
+            recipesData[recipeIdx][key].push('');
+            renderRecipes(); saveLocal();
+          };
+
+          group.appendChild(listContainer);
+          group.appendChild(addBtn);
+
+          // Attach SortableJS to allow drag & drop via handle
+          attachSortable(listContainer, recipeIdx, key);
+
+          return group;
+        }
+
+        recipeDiv.appendChild(buildList('ingredients', 'Ingredients:', '+ Add Ingredient'));
+        recipeDiv.appendChild(buildList('instructions', 'Instructions:', '+ Add Instruction'));
+
         editor.appendChild(recipeDiv);
       });
     }
-    
+
     // -------------------------------
-    // Create a list item for ingredients or instructions
+    // Create a list item element. Important: handlers read index from dataset to stay valid after reorder.
     // -------------------------------
     function createListItem(recipeIdx, key, itemIndex, value) {
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "list-item";
-      
-      const itemInput = document.createElement("input");
-      itemInput.type = "text";
-      itemInput.className = "w3-input";
-      itemInput.value = value;
+      const itemDiv = document.createElement('div'); itemDiv.className = 'list-item';
+      itemDiv.dataset.index = itemIndex; // updated after reordering
+
+      const itemInput = document.createElement('input'); itemInput.type = 'text'; itemInput.className = 'w3-input';
+      itemInput.value = value || '';
+      itemInput.placeholder = key === 'ingredients' ? 'e.g. 200g flour' : 'e.g. Mix flour and eggs';
       itemInput.oninput = (e) => {
-        recipesData[recipeIdx][key][itemIndex] = e.target.value;
+        const idx = parseInt(itemDiv.dataset.index, 10);
+        if (!Number.isNaN(idx)) {
+          recipesData[recipeIdx][key][idx] = e.target.value;
+          saveLocal();
+        }
       };
-      
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "w3-button w3-red";
-      deleteBtn.textContent = "−";
+
+      const deleteBtn = document.createElement('button'); deleteBtn.className = 'w3-button w3-red'; deleteBtn.textContent = '−';
       deleteBtn.onclick = () => {
-        recipesData[recipeIdx][key].splice(itemIndex, 1);
-        renderRecipes();
+        const idx = parseInt(itemDiv.dataset.index, 10);
+        if (!Number.isNaN(idx)) {
+          recipesData[recipeIdx][key].splice(idx, 1);
+          renderRecipes(); saveLocal();
+        }
       };
-      
+
+      // Accessibility: up/down buttons to reorder (works without drag)
+      const upBtn = document.createElement('button'); upBtn.className = 'w3-button move-btn'; upBtn.textContent = '↑';
+      upBtn.title = 'Move up';
+      upBtn.onclick = () => { moveItem(recipeIdx, key, itemDiv, -1); };
+      const downBtn = document.createElement('button'); downBtn.className = 'w3-button move-btn'; downBtn.textContent = '↓';
+      downBtn.title = 'Move down';
+      downBtn.onclick = () => { moveItem(recipeIdx, key, itemDiv, +1); };
+
+      const dragHandle = document.createElement('div'); dragHandle.className = 'drag-handle'; dragHandle.setAttribute('aria-hidden', 'true'); dragHandle.textContent = '☰';
+
       itemDiv.appendChild(itemInput);
+      itemDiv.appendChild(upBtn);
+      itemDiv.appendChild(downBtn);
       itemDiv.appendChild(deleteBtn);
-      
+      itemDiv.appendChild(dragHandle);
+
       return itemDiv;
     }
-    
+
     // -------------------------------
-    // Add a new recipe
+    // Move item by offset (for keyboard/accessibility)
     // -------------------------------
-    document.getElementById("addRecipeBtn").onclick = () => {
-      const newRecipe = {
-        title: "New Recipe",
-        image: "image.png",
-        ingredients: [],
-        instructions: []
-      };
-      recipesData.push(newRecipe);
-      renderRecipes();
+    function moveItem(recipeIdx, key, itemDiv, offset) {
+      const listContainer = itemDiv.parentElement;
+      const currentIndex = Array.from(listContainer.children).indexOf(itemDiv);
+      const newIndex = currentIndex + offset;
+      if (newIndex < 0 || newIndex >= listContainer.children.length) return;
+      const reference = listContainer.children[newIndex];
+      if (offset < 0) listContainer.insertBefore(itemDiv, reference);
+      else listContainer.insertBefore(reference, itemDiv);
+      // update model and dataset indexes
+      updateOrderFromDOM(recipeIdx, key, listContainer);
+      saveLocal();
+    }
+
+    // -------------------------------
+    // Attach Sortable (drag & drop) to a container
+    // -------------------------------
+    function attachSortable(container, recipeIdx, key) {
+      // Avoid re-initializing if already sortable
+      if (container._sortable) return;
+      const sortable = new Sortable(container, {
+        handle: '.drag-handle',
+        animation: 150,
+        onEnd: function(evt){
+          updateOrderFromDOM(recipeIdx, key, container);
+          saveLocal();
+        }
+      });
+      container._sortable = sortable;
+    }
+
+    // -------------------------------
+    // Read DOM order and update recipesData, and refresh dataset.indexes
+    // -------------------------------
+    function updateOrderFromDOM(recipeIdx, key, listContainer) {
+      const inputs = Array.from(listContainer.querySelectorAll('.list-item input'));
+      const newArr = inputs.map(i => i.value);
+      recipesData[recipeIdx][key] = newArr;
+      // update dataset.index for items
+      Array.from(listContainer.children).forEach((child, idx) => { child.dataset.index = idx; });
+    }
+
+    // -------------------------------
+    // Add / load actions
+    // -------------------------------
+    document.getElementById('addRecipeBtn').onclick = () => {
+      const newRecipe = { title: 'New Recipe', image: '', ingredients: [], instructions: [] };
+      recipesData.push(newRecipe); renderRecipes(); saveLocal();
     };
-    
+    document.getElementById('loadSampleBtn').onclick = () => { recipesData = [ { title: 'Sample Pancakes', image: '', ingredients: ['200g flour','300ml milk','2 eggs'], instructions: ['Mix ingredients','Fry in pan'] } ]; renderRecipes(); saveLocal(); };
+
     // -------------------------------
-    // Save changes: push updated JSON to GitHub via the GitHub API
-    // (This function is called as the onsubmit handler of the form.)
+    // Export / Import JSON UI
+    // -------------------------------
+    document.getElementById('exportJsonBtn').onclick = () => {
+      const json = JSON.stringify(recipesData, null, 2);
+      // copy to clipboard
+      navigator.clipboard?.writeText(json).then(() => alert('JSON copied to clipboard!'));
+      // also trigger download
+      const blob = new Blob([json], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'recipes-export.json'; a.click(); URL.revokeObjectURL(url);
+    };
+    document.getElementById('importJsonBtn').onclick = async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) { recipesData = parsed; renderRecipes(); saveLocal(); alert('Imported JSON from clipboard'); }
+        else alert('JSON must be an array of recipes');
+      } catch(e) { alert('Import failed: make sure clipboard contains valid JSON array'); }
+    };
+
+    // -------------------------------
+    // Save changes to GitHub (called by form submit)
     // -------------------------------
     async function pushChanges() {
-      const token = document.getElementById("githubToken").value.trim();
-      if (!token) {
-        alert("Please enter your GitHub token.");
-        return;
-      }
+      const token = document.getElementById('githubToken').value.trim();
+      if (!token) { alert('Please enter your GitHub token.'); return; }
       const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
       try {
-        // First, get the current file info (to obtain the SHA)
         const getResponse = await fetch(apiUrl);
-        if (!getResponse.ok) {
-          throw new Error("Failed to fetch file info from GitHub.");
-        }
+        if (!getResponse.ok) throw new Error('Failed to fetch file info from GitHub.');
         const fileData = await getResponse.json();
         const sha = fileData.sha;
-        
-        // Prepare the updated content (base64-encoded)
         const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(recipesData, null, 2))));
-        const commitMessage = "Update recipes via editor";
-        
-        // Send the PUT request to update the file
+        const commitMessage = 'Update recipes via editor';
         const putResponse = await fetch(apiUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "token " + token
-          },
-          body: JSON.stringify({
-            message: commitMessage,
-            content: updatedContent,
-            sha: sha
-          })
+          method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token },
+          body: JSON.stringify({ message: commitMessage, content: updatedContent, sha: sha })
         });
-        if (putResponse.ok) {
-          alert("Recipes updated successfully! Will take effect shortly.");
-        } else {
-          const err = await putResponse.json();
-          console.error("Error pushing changes:", err);
-          alert("Failed to update recipes. Check console for details.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred. Check console for details.");
-      }
-      // Let the form submission proceed so Firefox can offer to store the token.
+        if (putResponse.ok) alert('Recipes updated successfully!'); else { const err = await putResponse.json(); console.error(err); alert('Failed to update recipes. See console.'); }
+      } catch (error) { console.error('Error:', error); alert('An error occurred. See console.'); }
     }
-    
+
     // -------------------------------
-    // Initialize by fetching and rendering the recipes
+    // Init
     // -------------------------------
     fetchRecipes();
   </script>
