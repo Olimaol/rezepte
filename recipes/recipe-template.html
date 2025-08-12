@@ -146,7 +146,9 @@
         function getCurrentRecipeMeta(){
             // pulled from template variables
             const idx = {{ index }}; // numeric index provided by Python generator
-            const title = `{{ recipe.title | replace('\'','\\\'') }}`;
+            // note: we keep the title escaping minimal here — your templating engine should output a safe value;
+            // if you prefer, use a tojson filter in your template to inject a JS object safely.
+            const title = `{{ recipe.title | replace("'","\\'") }}`;
             const image = `images/{{ recipe.image }}`;
             const url = window.location.href;
             return { index: idx, title: title, image: image, url: url };
@@ -161,6 +163,8 @@
             if (plan[key].some(r => r.index === meta.index)) return { ok:false, msg:'Bereits in dieser Woche vorhanden' };
             plan[key].push(meta);
             saveWeekPlan(plan);
+            // dispatch storage event for same-tab listeners (some browsers won't trigger storage on same tab)
+            try { window.dispatchEvent(new Event('storage')); } catch(e){}
             return { ok:true };
         }
 
