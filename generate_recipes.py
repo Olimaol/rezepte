@@ -1,3 +1,4 @@
+```python
 import json
 import os
 from jinja2 import Environment, FileSystemLoader
@@ -50,7 +51,7 @@ def get_nutrition_info(ingredients_query):
         print(
             "Error: Please set NUTRITIONIX_APP_ID and NUTRITIONIX_API_KEY in your environment."
         )
-        sys.exit(1)
+        return None  # Don't exit, just return None
 
     url = "https://trackapi.nutritionix.com/v2/natural/nutrients"
     headers = {
@@ -62,13 +63,16 @@ def get_nutrition_info(ingredients_query):
     # The query field should contain the ingredients list.
     payload = {"query": ingredients_query}
 
-    response = requests.post(url, headers=headers, json=payload)
-    if response.status_code != 200:
-        print("Error: Failed to retrieve data from Nutritionix API.")
-        print("Response:", response.text)
-        sys.exit(1)
-
-    return response.json()
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        if response.status_code != 200:
+            print("Error: Failed to retrieve data from Nutritionix API.")
+            print("Response:", response.text)
+            return None
+        return response.json()
+    except Exception as e:
+        print("Exception occurred while requesting Nutritionix API:", e)
+        return None
 
 
 def calculate_totals(nutrition_data):
@@ -91,7 +95,8 @@ def calculate_totals(nutrition_data):
 
     totals = {field: 0.0 for field in fields}
 
-    foods = nutrition_data.get("foods", [])
+    # If nutrition_data is None or doesn't contain foods, just return zeros
+    foods = (nutrition_data or {}).get("foods", []) if nutrition_data else []
     for food in foods:
         for field in fields:
             val = food.get(field, 0.0)
@@ -100,8 +105,6 @@ def calculate_totals(nutrition_data):
 
     # round the totals to two decimal places
     totals = {field: round(value, 2) for field, value in totals.items()}
-
-    # transform the values to strings and add units
 
     return totals
 
@@ -129,7 +132,17 @@ for index, recipe in enumerate(recipes):
         nutrition_data = get_nutrition_info(ingredients_english)
         nutrition_totals = calculate_totals(nutrition_data)
     except Exception:
-        nutrition_totals = None
+        # If anything at all goes wrong, just use zeros
+        print(f"Warning: Could not get nutrition info for recipe {index}. Using zeros.")
+        # use the same fields as in calculate_totals
+        nutrition_totals = {
+            "nf_calories": 0.0,
+            "nf_total_fat": 0.0,
+            "nf_saturated_fat": 0.0,
+            "nf_total_carbohydrate": 0.0,
+            "nf_sugars": 0.0,
+            "nf_protein": 0.0,
+        }
     output_path = os.path.join(output_dir, f"{index}.html")
     with open(output_path, "w", encoding="utf-8") as output_file:
         # Pass index as additional variable for the template.
@@ -141,3 +154,5 @@ for index, recipe in enumerate(recipes):
 index_template = env.get_template("index_template.html")
 with open("index.html", "w", encoding="utf-8") as index_file:
     index_file.write(index_template.render(recipes=recipes))
+```
+This version ensures that if nutrition information can't be retrieved for any reason, the script will use zeros for all nutritional values instead of aborting.
