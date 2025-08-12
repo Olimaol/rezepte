@@ -20,6 +20,14 @@
 
     /* Local-only recipe highlight */
     .local-only { background-color: #fff8d5; } /* pale yellow */
+    .local-label {
+      font-size:0.8rem;
+      background:#f1c40f;
+      color:#111;
+      padding:2px 6px;
+      border-radius:12px;
+      margin-left:8px;
+    }
 
     .arrow {
       position:absolute;
@@ -54,15 +62,29 @@
     .controls { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
     .sync-form { display:flex; gap:8px; align-items:center; margin-left:auto; }
     .sync-form input { max-width:180px; width:100%; box-sizing:border-box; padding:6px 8px; }
-    .sync-form button { white-space:nowrap; }
+    .sync-form button { white-space:nowrap; min-width:72px; }
 
+    /* Mobile: make sync form use full width so button doesn't get cut off */
     @media (max-width:600px) {
       .container { margin: 0; padding: 10px; max-width: 100%; }
       html, body { overflow-x: hidden; }
       .recipe-thumb { width:48px; height:36px; }
+
+      .sync-form {
+        width:100%;
+        margin-left:0;
+        justify-content:space-between;
+        gap:8px;
+      }
+      .sync-form input { max-width: none; flex: 1 1 auto; }
+      .sync-form button { flex: 0 0 auto; }
     }
 
     .arrow:focus { outline: 3px solid rgba(255,255,255,0.25); }
+
+    /* Small transient message styling */
+    .status-success { color: #0b7b3f; font-weight:600; }
+    .status-error { color: #c0392b; font-weight:600; }
   </style>
 </head>
 <body class="w3-light-grey">
@@ -83,8 +105,8 @@
     <div class="controls">
       <div class="sync-form" aria-hidden="false">
         <input id="githubToken" type="password" placeholder="GitHub Token (optional)">
-        <button id="syncBtn" class="w3-button w3-blue">Sync</button>
-        <span id="syncStatus" style="margin-left:8px;color:#666;font-size:0.95rem;"></span>
+        <button id="syncBtn" class="w3-button w3-blue" aria-live="polite">Sync</button>
+        <span id="syncStatus" style="margin-left:8px;color:#666;font-size:0.95rem;" aria-live="polite"></span>
       </div>
     </div>
   </div>
@@ -97,6 +119,12 @@
     const weekPlanPath = 'recipes/weekplan.json';
     const githubRawBase = (owner, repo, branch, path) => `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
 
+    // caches/state
+    let remotePlanCache = null;   // remote plan fetched from GitHub (or null)
+    let mergedPlan = {};         // current merged plan (what's shown / saved locally)
+    let localOnlyFlags = {};     // mapping week -> [bool, bool, ...] whether a recipe is local-only
+
+    // load/save local
     function loadPlanLocal(){ try{ return JSON.parse(localStorage.getItem(WEEKPLAN_KEY) || '{}'); }catch(e){ return {}; } }
     function savePlanLocal(p){ localStorage.setItem(WEEKPLAN_KEY, JSON.stringify(p)); }
 
@@ -110,6 +138,7 @@
 
     function getWeekOffsets() { return [ -2, -1, 0 ]; }
 
+    // Try to fetch weekplan.json from GitHub raw for branches 'main' then 'master'
     async function fetchWeekPlanFromGitHub() {
       const branches = ['main','master'];
       for (const b of branches) {
@@ -123,183 +152,72 @@
       return null;
     }
 
+    // Merge remote + local: remote first then append local-only entries.
     function mergePlans(localPlan, remotePlan) {
       const merged = {};
-      const localOnlyFlags = {};
-
+      // compute merged and flags
       const allWeeks = new Set([...Object.keys(remotePlan || {}), ...Object.keys(localPlan || {})]);
 
+      const flags = {};
       allWeeks.forEach(week => {
         merged[week] = [];
-        localOnlyFlags[week] = [];
+        flags[week] = [];
 
         const remoteRecipes = (remotePlan && remotePlan[week]) ? [...remotePlan[week]] : [];
         const localRecipes = (localPlan && localPlan[week]) ? [...localPlan[week]] : [];
 
-        // add all remote recipes first
+        // add remote recipes (not local-only)
         remoteRecipes.forEach(r => {
           merged[week].push(r);
-          localOnlyFlags[week].push(false);
+          flags[week].push(false);
         });
 
-        // add local-only recipes
+        // add local recipes that are not present in remote (unique by index)
         const remoteIndexes = new Set(remoteRecipes.map(r => r.index));
         localRecipes.forEach(r => {
           if (!remoteIndexes.has(r.index)) {
             merged[week].push(r);
-            localOnlyFlags[week].push(true); // mark as local only
+            flags[week].push(true);
           }
         });
       });
 
-      return { merged, localOnlyFlags };
+      return { merged, flags };
     }
 
-    function buildSlidesFromPlan(plan, localOnlyFlags) {
+    // If remotePlanCache may be null: compute flags by checking whether each entry exists in remotePlanCache
+    function computeLocalOnlyFlags(plan, remotePlan) {
+      const flags = {};
+      for (const week of Object.keys(plan || {})) {
+        flags[week] = [];
+        const arr = plan[week] || [];
+        for (const r of arr) {
+          if (!remotePlan) {
+            // if we don't have a remote, treat everything as local-only (so user sees unsynced items)
+            flags[week].push(true);
+          } else {
+            const remoteWeek = remotePlan[week] || [];
+            const found = remoteWeek.some(rr => rr.index === r.index);
+            flags[week].push(!found);
+          }
+        }
+      }
+      return flags;
+    }
+
+    // Renders slides using the provided plan + flags
+    function buildSlidesFromPlan(plan, flags) {
       const slides = document.getElementById('slides');
       slides.innerHTML = '';
       const offsets = getWeekOffsets();
       offsets.forEach(off => {
         const d = new Date(); d.setDate(d.getDate() + off*7);
         const key = isoWeekKey(d);
-        const slide = document.createElement('div'); 
+        const slide = document.createElement('div');
         slide.className = 'slide';
-        const h = document.createElement('div'); 
-        h.className = 'week-title'; 
-        h.textContent = key; 
+        const h = document.createElement('div');
+        h.className = 'week-title';
+        h.textContent = key;
         slide.appendChild(h);
 
-        const list = document.createElement('ul'); 
-        list.className = 'recipe-list';
-        (plan[key] || []).forEach((r, idx) => {
-          const li = document.createElement('li'); 
-          li.setAttribute('role','listitem');
-          if (localOnlyFlags && localOnlyFlags[key] && localOnlyFlags[key][idx]) {
-            li.classList.add('local-only');
-          }
-          const img = document.createElement('img'); 
-          img.src = r.image || ''; 
-          img.className = 'recipe-thumb'; 
-          img.alt = r.title || '';
-          const a = document.createElement('a'); 
-          a.href = r.url || '#'; 
-          a.textContent = r.title || '(kein Titel)';
-          const remove = document.createElement('button'); 
-          remove.className = 'remove-btn'; 
-          remove.textContent = 'Entfernen';
-          remove.onclick = ()=>{ 
-            plan[key].splice(idx,1); 
-            savePlanLocal(plan); 
-            buildSlidesFromPlan(plan, localOnlyFlags); 
-            centerToCurrent(); 
-          };
-          li.appendChild(img); li.appendChild(a); li.appendChild(remove); 
-          list.appendChild(li);
-        });
-
-        if (!(plan[key] && plan[key].length)) {
-          const empty = document.createElement('p'); 
-          empty.textContent = 'Keine Rezepte für diese Woche.'; 
-          slide.appendChild(empty);
-        } else {
-          slide.appendChild(list);
-        }
-        slides.appendChild(slide);
-      });
-
-      current = offsets.length - 1;
-      updateArrows();
-      requestAnimationFrame(() => centerToCurrent());
-    }
-
-    async function init(){
-      const local = loadPlanLocal();
-      buildSlidesFromPlan(local, {});
-
-      try {
-        const remote = await fetchWeekPlanFromGitHub();
-        if (remote) {
-          const { merged, localOnlyFlags } = mergePlans(local, remote);
-          savePlanLocal(merged);
-          buildSlidesFromPlan(merged, localOnlyFlags);
-          document.getElementById('syncStatus').textContent = 'Daten geladen (inkl. lokale Änderungen)';
-        } else {
-          document.getElementById('syncStatus').textContent = 'Keine remote Daten gefunden; nur lokale angezeigt';
-        }
-      } catch (e) {
-        console.warn('Remote load failed', e);
-      }
-
-      setTimeout(()=>{ centerToCurrent(); }, 80);
-    }
-
-    async function syncToGitHub(){
-      const token = document.getElementById('githubToken').value.trim();
-      if(!token){ document.getElementById('syncStatus').textContent = 'Kein Token angegeben (localStorage bleibt)'; return; }
-      const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${weekPlanPath}`;
-      try{
-        let sha = null;
-        const getRes = await fetch(apiUrl);
-        if(getRes.ok){ const fileData = await getRes.json(); sha = fileData.sha; }
-        const contentObj = loadPlanLocal();
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(contentObj,null,2))));
-        const putRes = await fetch(apiUrl, {
-          method:'PUT',
-          headers:{
-            'Content-Type':'application/json',
-            'Authorization':'token '+token
-          },
-          body: JSON.stringify({ message:'Update weekplan', content: content, sha: sha })
-        });
-        if(putRes.ok){
-          document.getElementById('syncStatus').textContent = 'Sync erfolgreich (remote gespeichert)';
-        } else {
-          const err = await putRes.json();
-          console.error(err);
-          document.getElementById('syncStatus').textContent = 'Sync fehlgeschlagen (siehe Konsole)';
-        }
-      }catch(e){
-        console.error(e);
-        document.getElementById('syncStatus').textContent = 'Sync error (siehe Konsole)';
-      }
-    }
-
-    document.getElementById('syncBtn').addEventListener('click', syncToGitHub);
-
-    const carouselEl = document.getElementById('carousel');
-    const slidesEl = document.getElementById('slides');
-    let current = 0;
-
-    function slideWidth(){
-      return carouselEl.clientWidth || carouselEl.getBoundingClientRect().width || window.innerWidth;
-    }
-    function showCurrent(){
-      const w = slideWidth();
-      slidesEl.style.transform = `translateX(${ -current * w }px)`;
-      updateArrows();
-    }
-    function updateArrows(){
-      const left = document.getElementById('arrowLeft');
-      const right = document.getElementById('arrowRight');
-      left.style.opacity = (current > 0) ? '1' : '0.35';
-      right.style.opacity = (current < slidesEl.children.length - 1) ? '1' : '0.35';
-      left.disabled = (current <= 0);
-      right.disabled = (current >= slidesEl.children.length - 1);
-    }
-    function centerToCurrent(){
-      if(current >= slidesEl.children.length) current = slidesEl.children.length -1;
-      if(current < 0) current = 0;
-      showCurrent();
-    }
-
-    window.addEventListener('resize', ()=>{ showCurrent(); });
-    document.getElementById('arrowLeft').addEventListener('click', ()=>{ if(current>0) current--; showCurrent(); });
-    document.getElementById('arrowRight').addEventListener('click', ()=>{ if(current < slidesEl.children.length-1) current++; showCurrent(); });
-
-    window.addEventListener('storage', ()=>{ const p = loadPlanLocal(); buildSlidesFromPlan(p, {}); });
-
-    init();
-  })();
-  </script>
-</body>
-</html>
+        const recipes =
