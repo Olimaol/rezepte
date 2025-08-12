@@ -1,4 +1,3 @@
-```python
 import json
 import os
 from jinja2 import Environment, FileSystemLoader
@@ -154,5 +153,3 @@ for index, recipe in enumerate(recipes):
 index_template = env.get_template("index_template.html")
 with open("index.html", "w", encoding="utf-8") as index_file:
     index_file.write(index_template.render(recipes=recipes))
-```
-This version ensures that if nutrition information can't be retrieved for any reason, the script will use zeros for all nutritional values instead of aborting.
