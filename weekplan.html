@@ -18,14 +18,34 @@
     .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
 
     /* Arrows: z-index above slides so they are clickable and visible */
-    .arrow { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.45); color:#fff; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity 150ms; z-index: 5; }
+    .arrow {
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      background:rgba(0,0,0,0.45);
+      color:#fff;
+      border-radius:50%;
+      width:44px;
+      height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      opacity:0;
+      transition:opacity 150ms;
+      z-index: 10;
+      pointer-events:auto;
+      border: none;
+    }
+    /* show arrows only on hover (desktop) */
     .carousel:hover .arrow { opacity:1; }
+
     .arrow.left { left:8px; }
     .arrow.right { right:8px; }
 
-    /* On touch devices, show arrows always (no hover) and slightly smaller */
+    /* On touch devices hide arrows entirely (no hover) */
     @media (hover: none) {
-      .arrow { opacity: 0.9; width:38px; height:38px; }
+      .arrow { display: none !important; }
     }
 
     .remove-btn { background:#e74c3c; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; }
@@ -37,7 +57,6 @@
 
     /* accessibility focus */
     .arrow:focus { outline: 3px solid rgba(255,255,255,0.25); }
-
   </style>
 </head>
 <body class="w3-light-grey">
@@ -48,7 +67,7 @@
 
   <div class="container">
     <h1>Wochenplan</h1>
-    <p>Aktuelle Woche und die letzten zwei Wochen. Tippen/ziehen oder klicke die Pfeile, um zu wechseln.</p>
+    <p>Aktuelle Woche und die letzten zwei Wochen. Tippen/ziehen oder klicke die Pfeile (Desktop: erscheinen beim Hovern) um zu wechseln.</p>
 
     <div class="carousel" id="carousel" aria-roledescription="carousel">
       <button class="arrow left" id="arrowLeft" aria-label="Vorherige Woche">◀</button>
@@ -204,10 +223,15 @@
       showCurrent();
     }
 
-    // touch / pointer swipe support (pointer-based, improved)
+    // touch / pointer swipe support (pointer-based, touch only)
     (function addSwipe(){
+      // Only allow dragging when pointerType === 'touch' (prevents mouse dragging)
       let startX = null; let startTime = 0; let pointerId = null; let dragging = false;
       carouselEl.addEventListener('pointerdown', (ev)=>{
+        // If the initial event was initiated on an arrow button, ignore
+        if (ev.target.closest('.arrow')) return;
+        // Only enable drag for touch pointers (not mouse)
+        if (ev.pointerType !== 'touch') return;
         startX = ev.clientX;
         startTime = Date.now();
         pointerId = ev.pointerId;
