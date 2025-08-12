@@ -18,6 +18,7 @@
         .recipe-header {
             text-align: center;
             margin-bottom: 20px;
+            position: relative;
         }
         .recipe-section {
             margin-bottom: 20px;
@@ -31,6 +32,17 @@
             list-style-type: square;
             padding-left: 20px;
         }
+
+        /* Add-to-weekplan button */
+        .week-btn {
+            display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:6px; border:none; background:#27ae60; color:#fff; cursor:pointer;
+        }
+        .week-btn[disabled] { opacity:0.6; cursor:not-allowed; }
+
+        /* small link to open weekplan page */
+        .open-weekplan {
+            position:absolute; right:12px; top:12px; font-size:0.9rem; color:#fff; background:#00796b; padding:6px 8px; border-radius:6px; text-decoration:none;
+        }
     </style>
 </head>
 <body class="w3-light-grey">
@@ -38,8 +50,8 @@
     <!-- Navbar -->
     <div class="w3-bar w3-teal">
         <a href="../index.html" class="w3-bar-item w3-button">Home</a>
-        <!-- Changed Editor link to pass recipe index -->
         <a href="../edit_recipes.html?index=4" class="w3-bar-item w3-button">Editor</a>
+        <a href="../weekplan.html" class="w3-bar-item w3-button">Wochenplan</a>
     </div>
 
     <!-- Recipe Container -->
@@ -49,6 +61,15 @@
             <div class="recipe-header">
                 <h1 id="recipe-name" itemprop="name">Quinoa-Taboulé (3)</h1>
                 <img id="recipe-image" itemprop="image" src="../images/quinoataboule.jpg" alt="Recipe Image" class="recipe-image">
+
+                <!-- quick open weekplan button -->
+                <a class="open-weekplan" href="../weekplan.html">Wochenplan</a>
+
+                <!-- Add to week plan -->
+                <div style="margin-top:10px;">
+                    <button id="add-to-week-btn" class="week-btn">➕ Zur Woche hinzufügen</button>
+                    <span id="add-feedback" style="margin-left:10px;color:#333;font-size:0.95rem;"></span>
+                </div>
             </div>
 
             <!-- Ingredients Section -->
@@ -114,6 +135,70 @@
             </div>
         </div>
     </div>
+
+    <script>
+    // Week-plan client side helper
+    (function(){
+        const WEEKPLAN_KEY = 'weekPlan_v1'; // localStorage key
+
+        // utility: calculate ISO week-year key formatted like '2025-W33'
+        function getIsoWeekKey(date) {
+            const target = new Date(date.valueOf());
+            const dayNr = (date.getDay() + 6) % 7; // Monday=0, Sunday=6
+            target.setDate(target.getDate() - dayNr + 3);
+            const firstThursday = target.valueOf();
+            target.setMonth(0, 1);
+            if (target.getDay() !== 4) {
+                target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+            }
+            const weekNumber = 1 + Math.round((firstThursday - target) /  (7 * 24 * 3600 * 1000));
+            const year = new Date(date.getFullYear(), 0, 1).getFullYear();
+            return `${date.getFullYear()}-W${String(weekNumber).padStart(2,'0')}`;
+        }
+
+        function loadWeekPlan() {
+            try { return JSON.parse(localStorage.getItem(WEEKPLAN_KEY) || '{}'); } catch(e){ return {}; }
+        }
+        function saveWeekPlan(obj){ localStorage.setItem(WEEKPLAN_KEY, JSON.stringify(obj)); }
+
+        function getCurrentRecipeMeta(){
+            // pulled from template variables
+            const idx = 4; // numeric index provided by Python generator
+            const title = `Quinoa-Taboulé (3)`;
+            const image = `../images/quinoataboule.jpg`;
+            const url = window.location.href;
+            return { index: idx, title: title, image: image, url: url };
+        }
+
+        function addToCurrentWeek() {
+            const plan = loadWeekPlan();
+            const key = getIsoWeekKey(new Date());
+            plan[key] = plan[key] || [];
+            const meta = getCurrentRecipeMeta();
+            // avoid duplicates by index
+            if (plan[key].some(r => r.index === meta.index)) return { ok:false, msg:'Bereits in dieser Woche vorhanden' };
+            plan[key].push(meta);
+            saveWeekPlan(plan);
+            return { ok:true };
+        }
+
+        const btn = document.getElementById('add-to-week-btn');
+        const feedback = document.getElementById('add-feedback');
+        if (btn){
+            btn.addEventListener('click', ()=>{
+                const res = addToCurrentWeek();
+                if (res.ok){
+                    feedback.textContent = 'Zur aktuellen Woche hinzugefügt.';
+                    btn.disabled = true;
+                    setTimeout(()=>{ feedback.textContent=''; btn.disabled = false; }, 2000);
+                } else {
+                    feedback.textContent = res.msg || 'Nicht hinzugefügt.';
+                    setTimeout(()=> feedback.textContent = '', 2000);
+                }
+            });
+        }
+    })();
+    </script>
 
     <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
 </body>
