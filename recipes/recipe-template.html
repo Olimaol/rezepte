@@ -147,7 +147,7 @@
             // pulled from template variables
             const idx = {{ index }}; // numeric index provided by Python generator
             const title = `{{ recipe.title | replace('\'','\\\'') }}`;
-            const image = `../images/{{ recipe.image }}`;
+            const image = `images/{{ recipe.image }}`;
             const url = window.location.href;
             return { index: idx, title: title, image: image, url: url };
         }
