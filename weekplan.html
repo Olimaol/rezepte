@@ -7,6 +7,7 @@
   <title>Wochenplan</title>
   <style>
     /* --- Page layout --- */
+    *, *::before, *::after { box-sizing: border-box; }
     body { margin: 0; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
     .container { max-width: 900px; margin: 20px auto; padding: 12px; box-sizing: border-box; }
 
@@ -16,23 +17,24 @@
     .slide { min-width:100%; flex: 0 0 100%; padding:16px; box-sizing:border-box; background:#fff; border:1px solid #e6e6e6; }
     .week-title { font-weight:600; margin-bottom:8px; }
     .recipe-list { list-style:none; padding:0; margin:0; }
-    .recipe-list li { display:flex; align-items:center; gap:12px; padding:8px; border-radius:6px; }
-    .recipe-list li a { text-decoration:none; color:#111; flex:1; }
-    .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
-
-    /* --- visual for unsynced local items --- */
-    .local-item { background: linear-gradient(90deg, rgba(255,249,230,0.9), rgba(255,255,255,0.6)); border-left: 4px solid #f1c40f; }
-    .unsynced-badge {
-      background:#f39c12;
-      color:#fff;
-      font-weight:600;
-      font-size:0.75rem;
-      padding:4px 6px;
+    /* Important: allow items to shrink and prevent overflow */
+    .recipe-list li {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:8px;
       border-radius:6px;
-      margin-left:8px;
-      white-space:nowrap;
+      justify-content:space-between;
+      align-items:center;
+      overflow: hidden;
     }
-    .recipe-meta { display:flex; align-items:center; gap:8px; }
+    .recipe-list li a { text-decoration:none; color:#111; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; flex:0 0 auto; }
+
+    /* --- visual for unsynced local items (keep highlight only) --- */
+    .local-item { background: linear-gradient(90deg, rgba(255,249,230,0.9), rgba(255,255,255,0.6)); border-left: 4px solid #f1c40f; }
+
+    .recipe-meta { display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
 
     /* --- Arrows --- */
     .arrow {
@@ -65,20 +67,23 @@
       .arrow { display: none !important; }
     }
 
-    .remove-btn { background:#e74c3c; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; }
+    .remove-btn { background:#e74c3c; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; flex:0 0 auto; margin-left:8px; }
 
     /* --- Controls (sync) --- */
     .controls { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
-    .sync-form { display:flex; gap:8px; align-items:center; margin-left:auto; }
-    .sync-form input { max-width:180px; width:100%; box-sizing:border-box; padding:6px 8px; }
-    .sync-form button { white-space:nowrap; }
+    .sync-form { display:flex; gap:8px; align-items:center; margin-left:auto; min-width:0; }
+    .sync-form input { max-width:180px; width:100%; box-sizing:border-box; padding:6px 8px; min-width:0; }
+    .sync-form button { white-space:nowrap; flex:0 0 auto; }
 
-    /* small helper for narrow screens */
+    /* make controls fully visible on very small screens */
     @media (max-width:600px) {
       .container { margin: 0; padding: 10px; max-width: 100%; }
       /* prevent any accidental horizontal scrolling on small screens */
       html, body { overflow-x: hidden; }
       .recipe-thumb { width:48px; height:36px; }
+      /* make sync controls occupy full width and wrap so the button isn't cut off */
+      .sync-form { width:100%; margin-left:0; justify-content:space-between; }
+      .sync-form input { max-width: calc(100% - 110px); } /* leave room for button */
     }
 
     /* accessibility focus */
@@ -241,16 +246,10 @@
           if(r && r._unsynced) li.classList.add('local-item');
 
           const img = document.createElement('img'); img.src = r.image || ''; img.className = 'recipe-thumb'; img.alt = r.title || '';
-          const a = document.createElement('a'); a.href = r.url || '#'; a.textContent = r.title || '(kein Titel)';
 
           const metaWrap = document.createElement('div'); metaWrap.className = 'recipe-meta';
+          const a = document.createElement('a'); a.href = r.url || '#'; a.textContent = r.title || '(kein Titel)';
           metaWrap.appendChild(a);
-          if(r && r._unsynced) {
-            const badge = document.createElement('span');
-            badge.className = 'unsynced-badge';
-            badge.textContent = 'Lokal (nicht synchronisiert)';
-            metaWrap.appendChild(badge);
-          }
 
           const remove = document.createElement('button'); remove.className = 'remove-btn'; remove.textContent = 'Entfernen';
 
