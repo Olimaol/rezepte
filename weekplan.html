@@ -20,6 +20,20 @@
     .recipe-list li a { text-decoration:none; color:#111; flex:1; }
     .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
 
+    /* --- visual for unsynced local items --- */
+    .local-item { background: linear-gradient(90deg, rgba(255,249,230,0.9), rgba(255,255,255,0.6)); border-left: 4px solid #f1c40f; }
+    .unsynced-badge {
+      background:#f39c12;
+      color:#fff;
+      font-weight:600;
+      font-size:0.75rem;
+      padding:4px 6px;
+      border-radius:6px;
+      margin-left:8px;
+      white-space:nowrap;
+    }
+    .recipe-meta { display:flex; align-items:center; gap:8px; }
+
     /* --- Arrows --- */
     .arrow {
       position:absolute;
@@ -136,7 +150,12 @@
       return null;
     }
 
-    // Merge remote + local plans. Local overrides duplicates (same index), and local-only entries are kept.
+    // deep-equal helper (simple JSON stringify; OK for small metadata objects)
+    function equalJSON(a,b){
+      try { return JSON.stringify(a) === JSON.stringify(b); } catch(e){ return false; }
+    }
+
+    // Merge remote + local plans and mark items that are local-only or locally edited with _unsynced = true.
     function mergePlans(remote, local) {
       remote = remote || {};
       local = local || {};
@@ -146,44 +165,62 @@
         const rList = Array.isArray(remote[k]) ? remote[k].slice() : [];
         const lList = Array.isArray(local[k]) ? local[k].slice() : [];
 
-        // map remote items by index
-        const byIndex = {};
-        rList.forEach(item => { if(item && (item.index !== undefined)) byIndex[item.index] = item; });
+        // index maps for quick lookup
+        const remoteByIndex = {};
+        rList.forEach(item => { if(item && item.index !== undefined) remoteByIndex[item.index] = item; });
+        const localByIndex = {};
+        lList.forEach(item => { if(item && item.index !== undefined) localByIndex[item.index] = item; });
 
-        // override with local items if indexes match, and record local-only
-        lList.forEach(item => {
-          if(item && (item.index !== undefined)) {
-            byIndex[item.index] = item; // local overrides remote
-          } else if (item) {
-            // local item with no index -> append
-            rList.push(item);
-          }
-        });
-
-        // build merged array preserving remote order, but with local overrides + local-only appended
+        // start from remote order, replacing with local if present
         const merged = [];
         rList.forEach(item => {
-          if(item && (item.index !== undefined) && byIndex[item.index]) {
-            // add the final object (which may be local override)
-            if(!merged.some(m => m.index === item.index)) merged.push(byIndex[item.index]);
+          if(item && item.index !== undefined && localByIndex[item.index]) {
+            // use local override
+            const localItem = Object.assign({}, localByIndex[item.index]);
+            // mark unsynced if local differs from remote
+            if(!equalJSON(localItem, item)) localItem._unsynced = true;
+            merged.push(localItem);
           } else {
-            // keep item as-is (no index)
+            // keep remote item as-is
             merged.push(item);
           }
         });
 
-        // now append any local items not already in merged (covers local items for weeks not present in remote or new local indexes)
+        // append any local items that didn't exist in remote (local-only)
         lList.forEach(item => {
-          if(item && (item.index !== undefined)) {
-            if(!merged.some(m => m.index === item.index)) merged.push(item);
-          } else if (item && !merged.includes(item)) {
-            merged.push(item);
+          if(item && item.index !== undefined) {
+            if(!merged.some(m => m && m.index === item.index)) {
+              const localCopy = Object.assign({}, item);
+              // mark as unsynced because remote had no matching index
+              localCopy._unsynced = true;
+              merged.push(localCopy);
+            }
+          } else {
+            // items without index (freeform local additions) -> mark unsynced and append
+            const localCopy = Object.assign({}, item);
+            localCopy._unsynced = true;
+            merged.push(localCopy);
           }
         });
 
         out[k] = merged;
       });
       return out;
+    }
+
+    // Helper to remove internal metadata (keys starting with "_") before uploading to GitHub
+    function stripInternalFields(obj) {
+      if (Array.isArray(obj)) return obj.map(stripInternalFields);
+      if (obj && typeof obj === 'object') {
+        const res = {};
+        for (const k in obj) {
+          if (!Object.prototype.hasOwnProperty.call(obj, k)) continue;
+          if (k.startsWith('_')) continue;
+          res[k] = stripInternalFields(obj[k]);
+        }
+        return res;
+      }
+      return obj;
     }
 
     // Build slides from a plan object (not directly from localStorage to allow merging)
@@ -201,19 +238,38 @@
         const list = document.createElement('ul'); list.className = 'recipe-list';
         (plan[key] || []).forEach((r, idx)=>{
           const li = document.createElement('li'); li.setAttribute('role','listitem');
+          if(r && r._unsynced) li.classList.add('local-item');
+
           const img = document.createElement('img'); img.src = r.image || ''; img.className = 'recipe-thumb'; img.alt = r.title || '';
           const a = document.createElement('a'); a.href = r.url || '#'; a.textContent = r.title || '(kein Titel)';
+
+          const metaWrap = document.createElement('div'); metaWrap.className = 'recipe-meta';
+          metaWrap.appendChild(a);
+          if(r && r._unsynced) {
+            const badge = document.createElement('span');
+            badge.className = 'unsynced-badge';
+            badge.textContent = 'Lokal (nicht synchronisiert)';
+            metaWrap.appendChild(badge);
+          }
+
           const remove = document.createElement('button'); remove.className = 'remove-btn'; remove.textContent = 'Entfernen';
 
-          // remove by unique index (more robust)
+          // remove by unique index (if available), else by exact object identity (fallback)
           remove.onclick = ()=> {
-            plan[key] = (plan[key] || []).filter(x => x.index !== r.index);
+            if(r && r.index !== undefined) {
+              plan[key] = (plan[key] || []).filter(x => x.index !== r.index);
+            } else {
+              plan[key] = (plan[key] || []).filter(x => x !== r);
+            }
             savePlanLocal(plan);
             buildSlidesFromPlan(plan);
             centerToCurrent();
           };
 
-          li.appendChild(img); li.appendChild(a); li.appendChild(remove); list.appendChild(li);
+          li.appendChild(img);
+          li.appendChild(metaWrap);
+          li.appendChild(remove);
+          list.appendChild(li);
         });
         if(!(plan[key] && plan[key].length)){
           const empty = document.createElement('p'); empty.textContent = 'Keine Rezepte für diese Woche.'; slide.appendChild(empty);
@@ -314,7 +370,7 @@
       carouselEl.addEventListener('pointerleave', (ev)=>{ if(dragging) end(ev); });
     })();
 
-    // Sync to GitHub (PUT using GitHub REST API). After successful PUT the remote file will be available under raw URL.
+    // Sync to GitHub (PUT using GitHub REST API). Before upload strip internal fields like _unsynced.
     async function syncToGitHub(){
       const token = document.getElementById('githubToken').value.trim();
       if(!token){ document.getElementById('syncStatus').textContent = 'Kein Token angegeben (localStorage bleibt)'; return; }
@@ -325,7 +381,9 @@
         const getRes = await fetch(apiUrl);
         if(getRes.ok){ const fileData = await getRes.json(); sha = fileData.sha; }
         const contentObj = loadPlanLocal();
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(contentObj,null,2))));
+        // strip internal metadata before uploading
+        const clean = stripInternalFields(contentObj);
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(clean,null,2))));
         const putRes = await fetch(apiUrl, {
           method:'PUT',
           headers:{
@@ -335,7 +393,21 @@
           body: JSON.stringify({ message:'Update weekplan', content: content, sha: sha })
         });
         if(putRes.ok){
-          document.getElementById('syncStatus').textContent = 'Sync erfolgreich (remote gespeichert)';
+          // after successful upload, clear unsynced flags locally (since remote is now in sync)
+          // attempt to fetch remote again to reflect authoritative state
+          const remote = await fetchWeekPlanFromGitHub();
+          if(remote) {
+            savePlanLocal(remote);
+            buildSlidesFromPlan(remote);
+            document.getElementById('syncStatus').textContent = 'Sync erfolgreich (remote gespeichert)';
+          } else {
+            // fallback: remove _unsynced flags from local store
+            const local = loadPlanLocal();
+            const tidy = stripInternalFields(local);
+            savePlanLocal(tidy);
+            buildSlidesFromPlan(tidy);
+            document.getElementById('syncStatus').textContent = 'Sync erfolgreich (lokale Flags entfernt)';
+          }
         } else {
           const err = await putRes.json();
           console.error(err);
