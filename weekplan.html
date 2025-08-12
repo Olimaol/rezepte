@@ -6,11 +6,9 @@
   <link rel="stylesheet" href="./w3.css">
   <title>Wochenplan</title>
   <style>
-    /* --- Page layout --- */
     body { margin: 0; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
     .container { max-width: 900px; margin: 20px auto; padding: 12px; box-sizing: border-box; }
 
-    /* --- Carousel --- */
     .carousel { position: relative; overflow: hidden; border-radius:8px; touch-action: pan-y; }
     .slides { display:flex; transition: transform 300ms ease; will-change: transform; z-index: 0; }
     .slide { min-width:100%; flex: 0 0 100%; padding:16px; box-sizing:border-box; background:#fff; border:1px solid #e6e6e6; }
@@ -20,7 +18,9 @@
     .recipe-list li a { text-decoration:none; color:#111; flex:1; }
     .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
 
-    /* --- Arrows --- */
+    /* Local-only recipe highlight */
+    .local-only { background-color: #fff8d5; } /* pale yellow */
+
     .arrow {
       position:absolute;
       top:50%;
@@ -40,34 +40,28 @@
       pointer-events:auto;
       border: none;
     }
-    /* show arrows only on hover (desktop) */
     .carousel:hover .arrow { opacity:1; }
 
     .arrow.left { left:8px; }
     .arrow.right { right:8px; }
 
-    /* On touch devices hide arrows entirely (no hover) */
     @media (hover: none) {
       .arrow { display: none !important; }
     }
 
     .remove-btn { background:#e74c3c; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; }
 
-    /* --- Controls (sync) --- */
     .controls { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
     .sync-form { display:flex; gap:8px; align-items:center; margin-left:auto; }
     .sync-form input { max-width:180px; width:100%; box-sizing:border-box; padding:6px 8px; }
     .sync-form button { white-space:nowrap; }
 
-    /* small helper for narrow screens */
     @media (max-width:600px) {
       .container { margin: 0; padding: 10px; max-width: 100%; }
-      /* prevent any accidental horizontal scrolling on small screens */
       html, body { overflow-x: hidden; }
       .recipe-thumb { width:48px; height:36px; }
     }
 
-    /* accessibility focus */
     .arrow:focus { outline: 3px solid rgba(255,255,255,0.25); }
   </style>
 </head>
@@ -80,7 +74,6 @@
   <div class="container">
     <h1>Wochenplan</h1>
 
-    <!-- Carousel (no paragraph above, as requested) -->
     <div class="carousel" id="carousel" aria-roledescription="carousel">
       <button class="arrow left" id="arrowLeft" aria-label="Vorherige Woche">◀</button>
       <button class="arrow right" id="arrowRight" aria-label="Nächste Woche">▶</button>
@@ -94,13 +87,12 @@
         <span id="syncStatus" style="margin-left:8px;color:#666;font-size:0.95rem;"></span>
       </div>
     </div>
-
   </div>
 
   <script>
   (function(){
     const WEEKPLAN_KEY = 'weekPlan_v1';
-    const repoOwner = 'Olimaol'; // change if needed
+    const repoOwner = 'Olimaol';
     const repoName = 'rezepte';
     const weekPlanPath = 'recipes/weekplan.json';
     const githubRawBase = (owner, repo, branch, path) => `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
@@ -116,9 +108,8 @@
       return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2,'0')}`;
     }
 
-    function getWeekOffsets() { return [ -2, -1, 0 ]; } // last 2 weeks and current
+    function getWeekOffsets() { return [ -2, -1, 0 ]; }
 
-    // Try to fetch weekplan.json from GitHub raw for branches 'main' then 'master'
     async function fetchWeekPlanFromGitHub() {
       const branches = ['main','master'];
       for (const b of branches) {
@@ -126,165 +117,127 @@
           const url = githubRawBase(repoOwner, repoName, b, weekPlanPath);
           const res = await fetch(url);
           if (!res.ok) continue;
-          const json = await res.json();
-          return json;
-        } catch (e) {
-          // Continue to next branch
-          continue;
-        }
+          return await res.json();
+        } catch (e) { continue; }
       }
       return null;
     }
 
-    // Build slides from a plan object (not directly from localStorage to allow merging)
-    function buildSlidesFromPlan(plan) {
-      const slides = document.getElementById('slides'); slides.innerHTML = '';
+    function mergePlans(localPlan, remotePlan) {
+      const merged = {};
+      const localOnlyFlags = {};
+
+      const allWeeks = new Set([...Object.keys(remotePlan || {}), ...Object.keys(localPlan || {})]);
+
+      allWeeks.forEach(week => {
+        merged[week] = [];
+        localOnlyFlags[week] = [];
+
+        const remoteRecipes = (remotePlan && remotePlan[week]) ? [...remotePlan[week]] : [];
+        const localRecipes = (localPlan && localPlan[week]) ? [...localPlan[week]] : [];
+
+        // add all remote recipes first
+        remoteRecipes.forEach(r => {
+          merged[week].push(r);
+          localOnlyFlags[week].push(false);
+        });
+
+        // add local-only recipes
+        const remoteIndexes = new Set(remoteRecipes.map(r => r.index));
+        localRecipes.forEach(r => {
+          if (!remoteIndexes.has(r.index)) {
+            merged[week].push(r);
+            localOnlyFlags[week].push(true); // mark as local only
+          }
+        });
+      });
+
+      return { merged, localOnlyFlags };
+    }
+
+    function buildSlidesFromPlan(plan, localOnlyFlags) {
+      const slides = document.getElementById('slides');
+      slides.innerHTML = '';
       const offsets = getWeekOffsets();
       offsets.forEach(off => {
         const d = new Date(); d.setDate(d.getDate() + off*7);
         const key = isoWeekKey(d);
-        const title = key;
+        const slide = document.createElement('div'); 
+        slide.className = 'slide';
+        const h = document.createElement('div'); 
+        h.className = 'week-title'; 
+        h.textContent = key; 
+        slide.appendChild(h);
 
-        const slide = document.createElement('div'); slide.className = 'slide';
-        const h = document.createElement('div'); h.className = 'week-title'; h.textContent = title; slide.appendChild(h);
-
-        const list = document.createElement('ul'); list.className = 'recipe-list';
-        (plan[key] || []).forEach((r, idx)=>{
-          const li = document.createElement('li'); li.setAttribute('role','listitem');
-          const img = document.createElement('img'); img.src = r.image || ''; img.className = 'recipe-thumb'; img.alt = r.title || '';
-          const a = document.createElement('a'); a.href = r.url || '#'; a.textContent = r.title || '(kein Titel)';
-          const remove = document.createElement('button'); remove.className = 'remove-btn'; remove.textContent = 'Entfernen';
-          remove.onclick = ()=>{ plan[key].splice(idx,1); savePlanLocal(plan); buildSlidesFromPlan(plan); centerToCurrent(); };
-
-          li.appendChild(img); li.appendChild(a); li.appendChild(remove); list.appendChild(li);
+        const list = document.createElement('ul'); 
+        list.className = 'recipe-list';
+        (plan[key] || []).forEach((r, idx) => {
+          const li = document.createElement('li'); 
+          li.setAttribute('role','listitem');
+          if (localOnlyFlags && localOnlyFlags[key] && localOnlyFlags[key][idx]) {
+            li.classList.add('local-only');
+          }
+          const img = document.createElement('img'); 
+          img.src = r.image || ''; 
+          img.className = 'recipe-thumb'; 
+          img.alt = r.title || '';
+          const a = document.createElement('a'); 
+          a.href = r.url || '#'; 
+          a.textContent = r.title || '(kein Titel)';
+          const remove = document.createElement('button'); 
+          remove.className = 'remove-btn'; 
+          remove.textContent = 'Entfernen';
+          remove.onclick = ()=>{ 
+            plan[key].splice(idx,1); 
+            savePlanLocal(plan); 
+            buildSlidesFromPlan(plan, localOnlyFlags); 
+            centerToCurrent(); 
+          };
+          li.appendChild(img); li.appendChild(a); li.appendChild(remove); 
+          list.appendChild(li);
         });
-        if(!(plan[key] && plan[key].length)){
-          const empty = document.createElement('p'); empty.textContent = 'Keine Rezepte für diese Woche.'; slide.appendChild(empty);
+
+        if (!(plan[key] && plan[key].length)) {
+          const empty = document.createElement('p'); 
+          empty.textContent = 'Keine Rezepte für diese Woche.'; 
+          slide.appendChild(empty);
         } else {
           slide.appendChild(list);
         }
         slides.appendChild(slide);
       });
 
-      // ensure current points to the last slide (current week)
       current = offsets.length - 1;
       updateArrows();
-      // after building slides, align
       requestAnimationFrame(() => centerToCurrent());
     }
 
-    // Top-level load: try GitHub remote, then localStorage fallback.
-    async function initialLoadAndRender() {
-      // Render immediately from local so user sees something quickly
+    async function init(){
       const local = loadPlanLocal();
-      buildSlidesFromPlan(local);
+      buildSlidesFromPlan(local, {});
 
-      // Try remote fetch — if found, use it and persist to localStorage
       try {
         const remote = await fetchWeekPlanFromGitHub();
         if (remote) {
-          savePlanLocal(remote);
-          buildSlidesFromPlan(remote);
-          document.getElementById('syncStatus').textContent = 'Daten geladen von GitHub (remote)';
+          const { merged, localOnlyFlags } = mergePlans(local, remote);
+          savePlanLocal(merged);
+          buildSlidesFromPlan(merged, localOnlyFlags);
+          document.getElementById('syncStatus').textContent = 'Daten geladen (inkl. lokale Änderungen)';
         } else {
-          document.getElementById('syncStatus').textContent = 'Keine remote Daten gefunden; lokal angezeigt';
+          document.getElementById('syncStatus').textContent = 'Keine remote Daten gefunden; nur lokale angezeigt';
         }
       } catch (e) {
-        console.warn('Remote fetch failed', e);
-      }
-    }
-
-    // Carousel state
-    const carouselEl = document.getElementById('carousel');
-    const slidesEl = document.getElementById('slides');
-    let current = 0; // will be set by buildSlidesFromPlan
-
-    function slideWidth(){
-      return carouselEl.clientWidth || carouselEl.getBoundingClientRect().width || window.innerWidth;
-    }
-
-    function showCurrent(){
-      const w = slideWidth();
-      slidesEl.style.transform = `translateX(${ -current * w }px)`;
-      updateArrows();
-    }
-
-    function updateArrows(){
-      const left = document.getElementById('arrowLeft');
-      const right = document.getElementById('arrowRight');
-      left.style.opacity = (current > 0) ? '1' : '0.35';
-      right.style.opacity = (current < slidesEl.children.length - 1) ? '1' : '0.35';
-      left.disabled = (current <= 0);
-      right.disabled = (current >= slidesEl.children.length - 1);
-    }
-
-    // Recompute on resize (debounced)
-    let resizeTimeout = null;
-    window.addEventListener('resize', ()=>{ clearTimeout(resizeTimeout); resizeTimeout = setTimeout(()=> showCurrent(), 120); });
-
-    document.getElementById('arrowLeft').addEventListener('click', (ev)=>{ ev.stopPropagation(); if(current>0) current--; showCurrent(); });
-    document.getElementById('arrowRight').addEventListener('click', (ev)=>{ ev.stopPropagation(); if(current < slidesEl.children.length-1) current++; showCurrent(); });
-
-    // Helper to center after rebuild
-    function centerToCurrent(){
-      if(current >= slidesEl.children.length) current = slidesEl.children.length -1;
-      if(current < 0) current = 0;
-      showCurrent();
-    }
-
-    // touch / pointer swipe support (pointer-based, touch only)
-    (function addSwipe(){
-      // Only allow dragging when pointerType === 'touch' (prevents mouse dragging)
-      let startX = null; let startTime = 0; let pointerId = null; let dragging = false;
-      carouselEl.addEventListener('pointerdown', (ev)=>{
-        // If the initial event was initiated on an arrow button, ignore
-        if (ev.target.closest('.arrow')) return;
-        // Only enable drag for touch pointers (not mouse)
-        if (ev.pointerType !== 'touch') return;
-        startX = ev.clientX;
-        startTime = Date.now();
-        pointerId = ev.pointerId;
-        dragging = true;
-        carouselEl.setPointerCapture && carouselEl.setPointerCapture(pointerId);
-      }, { passive: true });
-
-      carouselEl.addEventListener('pointermove', (ev)=>{
-        if(!dragging || startX === null) return;
-        const dx = ev.clientX - startX;
-        slidesEl.style.transition = 'none';
-        slidesEl.style.transform = `translateX(${ -current * slideWidth() + dx }px)`;
-      }, { passive: true });
-
-      function end(ev){
-        if(!dragging) return;
-        const dx = ev.clientX - startX;
-        const dt = Date.now() - startTime;
-        dragging = false;
-        startX = null;
-        slidesEl.style.transition = ''; // restore transition
-        try{ carouselEl.releasePointerCapture && carouselEl.releasePointerCapture(pointerId); }catch(e){}
-        pointerId = null;
-
-        // threshold / fling detection
-        if(Math.abs(dx) > 50 || (Math.abs(dx) > 20 && dt < 220)){
-          if(dx < 0 && current < slidesEl.children.length -1) current++;
-          else if(dx > 0 && current > 0) current--;
-        }
-        showCurrent();
+        console.warn('Remote load failed', e);
       }
 
-      carouselEl.addEventListener('pointerup', end);
-      carouselEl.addEventListener('pointercancel', end);
-      carouselEl.addEventListener('pointerleave', (ev)=>{ if(dragging) end(ev); });
-    })();
+      setTimeout(()=>{ centerToCurrent(); }, 80);
+    }
 
-    // Sync to GitHub (PUT using GitHub REST API). After successful PUT the remote file will be available under raw URL.
     async function syncToGitHub(){
       const token = document.getElementById('githubToken').value.trim();
       if(!token){ document.getElementById('syncStatus').textContent = 'Kein Token angegeben (localStorage bleibt)'; return; }
       const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${weekPlanPath}`;
       try{
-        // get current sha if exists
         let sha = null;
         const getRes = await fetch(apiUrl);
         if(getRes.ok){ const fileData = await getRes.json(); sha = fileData.sha; }
@@ -313,34 +266,39 @@
 
     document.getElementById('syncBtn').addEventListener('click', syncToGitHub);
 
-    // initial load: try remote, else local
-    (async function init(){
-      // Render immediately from local so user sees something quickly
-      const local = loadPlanLocal();
-      buildSlidesFromPlan(local);
+    const carouselEl = document.getElementById('carousel');
+    const slidesEl = document.getElementById('slides');
+    let current = 0;
 
-      // Try to load remote (non-authenticated). If present, use & persist locally.
-      try {
-        const remote = await fetchWeekPlanFromGitHub();
-        if (remote) {
-          savePlanLocal(remote);
-          buildSlidesFromPlan(remote);
-          document.getElementById('syncStatus').textContent = 'Daten geladen von GitHub (remote)';
-        } else {
-          // nothing remote; remain with local
-          document.getElementById('syncStatus').textContent = '';
-        }
-      } catch (e) {
-        console.warn('remote load failed', e);
-      }
+    function slideWidth(){
+      return carouselEl.clientWidth || carouselEl.getBoundingClientRect().width || window.innerWidth;
+    }
+    function showCurrent(){
+      const w = slideWidth();
+      slidesEl.style.transform = `translateX(${ -current * w }px)`;
+      updateArrows();
+    }
+    function updateArrows(){
+      const left = document.getElementById('arrowLeft');
+      const right = document.getElementById('arrowRight');
+      left.style.opacity = (current > 0) ? '1' : '0.35';
+      right.style.opacity = (current < slidesEl.children.length - 1) ? '1' : '0.35';
+      left.disabled = (current <= 0);
+      right.disabled = (current >= slidesEl.children.length - 1);
+    }
+    function centerToCurrent(){
+      if(current >= slidesEl.children.length) current = slidesEl.children.length -1;
+      if(current < 0) current = 0;
+      showCurrent();
+    }
 
-      // small delay to ensure sizes are correct then center
-      setTimeout(()=>{ centerToCurrent(); }, 80);
-    })();
+    window.addEventListener('resize', ()=>{ showCurrent(); });
+    document.getElementById('arrowLeft').addEventListener('click', ()=>{ if(current>0) current--; showCurrent(); });
+    document.getElementById('arrowRight').addEventListener('click', ()=>{ if(current < slidesEl.children.length-1) current++; showCurrent(); });
 
-    // Keep in sync if other tabs/devices update localStorage or after remote sync in other tab
-    window.addEventListener('storage', ()=>{ const p = loadPlanLocal(); buildSlidesFromPlan(p); });
+    window.addEventListener('storage', ()=>{ const p = loadPlanLocal(); buildSlidesFromPlan(p, {}); });
 
+    init();
   })();
   </script>
 </body>
