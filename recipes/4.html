@@ -62,9 +62,6 @@
                 <h1 id="recipe-name" itemprop="name">Quinoa-Taboulé (3)</h1>
                 <img id="recipe-image" itemprop="image" src="../images/quinoataboule.jpg" alt="Recipe Image" class="recipe-image">
 
-                <!-- quick open weekplan button -->
-                <a class="open-weekplan" href="../weekplan.html">Wochenplan</a>
-
                 <!-- Add to week plan -->
                 <div style="margin-top:10px;">
                     <button id="add-to-week-btn" class="week-btn">➕ Zur Woche hinzufügen</button>
@@ -120,16 +117,16 @@
                 <h3>Nährwerte</h3>
                 
                 <ul>
-                    <li>Kalorien: 905.56 kcal</li>
-                    <li>Fett: 53.96 g</li>
+                    <li>Kalorien: 0.0 kcal</li>
+                    <li>Fett: 0.0 g</li>
                     <ul>
-                        <li>gesättigte Fettsäuren: 19.4 g</li>
+                        <li>gesättigte Fettsäuren: 0.0 g</li>
                     </ul>
-                    <li>Kohlenhydrate: 82.87 g</li>
+                    <li>Kohlenhydrate: 0.0 g</li>
                     <ul>
-                        <li>Zucker: 17.82 g</li>
+                        <li>Zucker: 0.0 g</li>
                     </ul>
-                    <li>Eiweiß: 29.36 g</li>
+                    <li>Eiweiß: 0.0 g</li>
                 </ul>
                 
             </div>
@@ -164,6 +161,8 @@
         function getCurrentRecipeMeta(){
             // pulled from template variables
             const idx = 4; // numeric index provided by Python generator
+            // note: we keep the title escaping minimal here — your templating engine should output a safe value;
+            // if you prefer, use a tojson filter in your template to inject a JS object safely.
             const title = `Quinoa-Taboulé (3)`;
             const image = `images/quinoataboule.jpg`;
             const url = window.location.href;
@@ -179,6 +178,8 @@
             if (plan[key].some(r => r.index === meta.index)) return { ok:false, msg:'Bereits in dieser Woche vorhanden' };
             plan[key].push(meta);
             saveWeekPlan(plan);
+            // dispatch storage event for same-tab listeners (some browsers won't trigger storage on same tab)
+            try { window.dispatchEvent(new Event('storage')); } catch(e){}
             return { ok:true };
         }
 
