@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="./w3.css">
+  <title>Wochenplan</title>
+  <style>
+    body { font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+    .container { max-width: 900px; margin: 20px auto; padding: 12px; }
+    .carousel { position: relative; overflow: hidden; border-radius:8px; }
+    .slides { display:flex; transition: transform 300ms ease; will-change: transform; }
+    .slide { min-width:100%; padding:16px; box-sizing:border-box; background:#fff; border:1px solid #e6e6e6; }
+    .week-title { font-weight:600; margin-bottom:8px; }
+    .recipe-list { list-style:none; padding:0; margin:0; }
+    .recipe-list li { display:flex; align-items:center; gap:12px; padding:8px; border-radius:6px; }
+    .recipe-list li a { text-decoration:none; color:#111; flex:1; }
+    .recipe-thumb { width:60px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd; }
+
+    /* Arrows appear on hover */
+    .arrow { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.45); color:#fff; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity 150ms; }
+    .carousel:hover .arrow { opacity:1; }
+    .arrow.left { left:8px; }
+    .arrow.right { right:8px; }
+
+    .remove-btn { background:#e74c3c; color:#fff; border:none; padding:6px 8px; border-radius:6px; cursor:pointer; }
+
+    /* Small controls */
+    .controls { display:flex; gap:10px; align-items:center; margin-top:12px; }
+    .sync-form { display:flex; gap:8px; align-items:center; }
+    .weeks-nav { margin-bottom:8px; }
+
+    @media (hover:none){ .carousel:hover .arrow{ opacity:1; } }
+  </style>
+</head>
+<body class="w3-light-grey">
+  <div class="w3-bar w3-teal">
+    <a href="index.html" class="w3-bar-item w3-button">Home</a>
+    <a href="edit_recipes.html" class="w3-bar-item w3-button">Editor</a>
+  </div>
+
+  <div class="container">
+    <h1>Wochenplan</h1>
+    <p>Aktuelle Woche und die letzten zwei Wochen. Tippen/ziehen oder klicke die Pfeile, um zu wechseln.</p>
+
+    <div class="carousel" id="carousel">
+      <div class="arrow left" id="arrowLeft" aria-hidden="true">◀</div>
+      <div class="arrow right" id="arrowRight" aria-hidden="true">▶</div>
+      <div class="slides" id="slides" role="list"></div>
+    </div>
+
+    <div class="controls">
+      <div class="weeks-nav"><strong>Gezeigte Wochen:</strong> <span id="weeksShown"></span></div>
+      <div class="sync-form" style="margin-left:auto;">
+        <input id="githubToken" type="password" placeholder="GitHub Token (optional)">
+        <button id="syncBtn" class="w3-button w3-blue">Sync to GitHub</button>
+        <span id="syncStatus" style="margin-left:8px;color:#666;font-size:0.95rem;"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+  (function(){
+    const WEEKPLAN_KEY = 'weekPlan_v1';
+    const repoOwner = 'Olimaol'; // change if needed
+    const repoName = 'rezepte';
+    const weekPlanPath = 'recipes/weekplan.json';
+
+    function loadPlan(){ try{ return JSON.parse(localStorage.getItem(WEEKPLAN_KEY) || '{}'); }catch(e){ return {}; } }
+    function savePlan(p){ localStorage.setItem(WEEKPLAN_KEY, JSON.stringify(p)); }
+
+    function isoWeekKey(date){
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+      return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2,'0')}`;
+    }
+
+    function getWeekOffsets() { return [ -2, -1, 0 ]; } // last 2 weeks and current
+
+    function buildSlides(){
+      const slides = document.getElementById('slides'); slides.innerHTML = '';
+      const plan = loadPlan();
+      const offsets = getWeekOffsets();
+      const weeksShown = document.getElementById('weeksShown'); weeksShown.textContent = '';
+      offsets.forEach(off => {
+        const d = new Date(); d.setDate(d.getDate() + off*7);
+        const key = isoWeekKey(d);
+        const title = `${key}`;
+        weeksShown.textContent += title + (off === 0 ? ' (aktuell) ' : ' ');
+
+        const slide = document.createElement('div'); slide.className = 'slide';
+        const h = document.createElement('div'); h.className = 'week-title'; h.textContent = title; slide.appendChild(h);
+
+        const list = document.createElement('ul'); list.className = 'recipe-list';
+        (plan[key] || []).forEach((r, idx)=>{
+          const li = document.createElement('li'); li.setAttribute('role','listitem');
+          const img = document.createElement('img'); img.src = r.image; img.className = 'recipe-thumb'; img.alt = r.title;
+          const a = document.createElement('a'); a.href = r.url; a.textContent = r.title;
+          const remove = document.createElement('button'); remove.className = 'remove-btn'; remove.textContent = 'Entfernen';
+          remove.onclick = ()=>{ plan[key].splice(idx,1); savePlan(plan); buildSlides(); centerToCurrent(); };
+
+          li.appendChild(img); li.appendChild(a); li.appendChild(remove); list.appendChild(li);
+        });
+        if(!(plan[key] && plan[key].length)){
+          const empty = document.createElement('p'); empty.textContent = 'Keine Rezepte für diese Woche.'; slide.appendChild(empty);
+        } else {
+          slide.appendChild(list);
+        }
+        slides.appendChild(slide);
+      });
+
+      // ensure current points to the last slide (current week)
+      current = offsets.length - 1;
+      // make sure arrows disabled state updated
+      updateArrows();
+    }
+
+    // Carousel state
+    const carouselEl = document.getElementById('carousel');
+    const slidesEl = document.getElementById('slides');
+    let current = 0; // will be set by buildSlides
+
+    function slideWidth(){
+      // width of the visible viewport (carousel element)
+      return carouselEl.clientWidth || carouselEl.getBoundingClientRect().width || window.innerWidth;
+    }
+
+    function showCurrent(){
+      const w = slideWidth();
+      slidesEl.style.transform = `translateX(${ -current * w }px)`;
+      updateArrows();
+    }
+
+    function updateArrows(){
+      const left = document.getElementById('arrowLeft');
+      const right = document.getElementById('arrowRight');
+      left.style.opacity = (current > 0) ? '1' : '0.35';
+      right.style.opacity = (current < slidesEl.children.length - 1) ? '1' : '0.35';
+    }
+
+    // Recompute on resize
+    let resizeTimeout = null;
+    window.addEventListener('resize', ()=>{ clearTimeout(resizeTimeout); resizeTimeout = setTimeout(()=> showCurrent(), 120); });
+
+    document.getElementById('arrowLeft').addEventListener('click', ()=>{ if(current>0) current--; showCurrent(); });
+    document.getElementById('arrowRight').addEventListener('click', ()=>{ if(current < slidesEl.children.length-1) current++; showCurrent(); });
+
+    // Helper to center after rebuild
+    function centerToCurrent(){
+      // find index bounds
+      if(current >= slidesEl.children.length) current = slidesEl.children.length -1;
+      if(current < 0) current = 0;
+      showCurrent();
+    }
+
+    // touch swipe support (pointer-based)
+    (function addSwipe(){
+      let startX = null; let startTime = 0; let pointerId = null;
+      carouselEl.addEventListener('pointerdown', (ev)=>{ startX = ev.clientX; startTime = Date.now(); pointerId = ev.pointerId; carouselEl.setPointerCapture(pointerId); });
+      carouselEl.addEventListener('pointermove', (ev)=>{ if(startX===null) return; const dx = ev.clientX - startX; slidesEl.style.transform = `translateX(${ -current * slideWidth() + dx }px)`; });
+      function end(ev){ if(startX===null) return; const dx = ev.clientX - startX; const dt = Date.now() - startTime; startX = null; try{ if(pointerId) carouselEl.releasePointerCapture(pointerId); }catch(e){} pointerId=null;
+        // swipe threshold
+        if(Math.abs(dx) > 50 || (Math.abs(dx) > 20 && dt < 200)){
+          if(dx < 0 && current < slidesEl.children.length -1) current++; else if(dx > 0 && current > 0) current--;
+        }
+        showCurrent();
+      }
+      carouselEl.addEventListener('pointerup', end);
+      carouselEl.addEventListener('pointercancel', end);
+      carouselEl.addEventListener('pointerleave', (ev)=>{ if(startX!==null) end(ev); });
+    })();
+
+    // Sync to GitHub
+    async function syncToGitHub(){
+      const token = document.getElementById('githubToken').value.trim();
+      if(!token){ document.getElementById('syncStatus').textContent = 'Kein Token angegeben (localStorage bleibt)'; return; }
+      const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${weekPlanPath}`;
+      try{
+        let sha = null;
+        const getRes = await fetch(apiUrl);
+        if(getRes.ok){ const fileData = await getRes.json(); sha = fileData.sha; }
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(loadPlan(),null,2))));
+        const putRes = await fetch(apiUrl, { method:'PUT', headers:{ 'Content-Type':'application/json','Authorization':'token '+token }, body: JSON.stringify({ message:'Update weekplan', content: content, sha: sha })});
+        if(putRes.ok){ document.getElementById('syncStatus').textContent = 'Sync erfolgreich'; }
+        else { const err = await putRes.json(); console.error(err); document.getElementById('syncStatus').textContent = 'Sync fehlgeschlagen (siehe Konsole)'; }
+      }catch(e){ console.error(e); document.getElementById('syncStatus').textContent = 'Sync error (siehe Konsole)'; }
+    }
+
+    document.getElementById('syncBtn').addEventListener('click', syncToGitHub);
+
+    // initial render
+    buildSlides();
+    setTimeout(()=>{ centerToCurrent(); }, 60);
+
+    // keep slides in sync with changes (localStorage changes from recipe pages)
+    window.addEventListener('storage', ()=>{ buildSlides(); centerToCurrent(); });
+
+  })();
+  </script>
+</body>
+</html>
