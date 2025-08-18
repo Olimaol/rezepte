@@ -7,7 +7,7 @@ on:
     paths:
       - 'generate_recipes.py'
       - 'recipes/recipe-template.html'
-      - 'recipes.json'
+      - 'recipes/recipes.json'
 
 permissions:
   contents: write  # Request write permissions for the GITHUB_TOKEN
