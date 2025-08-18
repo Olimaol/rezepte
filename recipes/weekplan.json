@@ -12,5 +12,13 @@
       "image": "images/OnePotPastanachBologneserArt.jpg",
       "url": "https://olimaol.github.io/rezepte/recipes/2.html"
     }
+  ],
+  "2025-W34": [
+    {
+      "index": 3,
+      "title": "One Pot Gemüse-Couscous",
+      "image": "images/OnePotGemseCouscous.jpg",
+      "url": "https://olimaol.github.io/rezepte/recipes/3.html"
+    }
   ]
 }
