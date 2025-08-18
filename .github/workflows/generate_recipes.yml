@@ -6,7 +6,7 @@ on:
       - master  # Change this to the branch you want to trigger the workflow on
     paths:
       - 'generate_recipes.py'
-      - 'recipes/recipes-template.html'
+      - 'recipes/recipe-template.html'
       - 'recipes.json'
 
 permissions:
