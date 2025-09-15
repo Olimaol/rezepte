@@ -20,5 +20,19 @@
       "image": "images/OnePotGemseCouscous.jpg",
       "url": "https://olimaol.github.io/rezepte/recipes/3.html"
     }
+  ],
+  "2025-W38": [
+    {
+      "index": 7,
+      "title": "Kichererbsen Quinoa Salat",
+      "image": "images/kichererbsenquinoasalat.jpeg",
+      "url": "https://olimaol.github.io/rezepte/recipes/7.html"
+    },
+    {
+      "index": 2,
+      "title": "One Pot Pasta nach Bologneser Art (4)",
+      "image": "images/OnePotPastanachBologneserArt.jpg",
+      "url": "https://olimaol.github.io/rezepte/recipes/2.html"
+    }
   ]
 }
