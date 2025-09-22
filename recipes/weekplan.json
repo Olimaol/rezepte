@@ -34,5 +34,19 @@
       "image": "images/OnePotPastanachBologneserArt.jpg",
       "url": "https://olimaol.github.io/rezepte/recipes/2.html"
     }
+  ],
+  "2025-W39": [
+    {
+      "index": 8,
+      "title": "Kartoffeln mexikanisch",
+      "image": "images/mexikanischekartoffeln.jpg",
+      "url": "https://olimaol.github.io/rezepte/recipes/8.html"
+    },
+    {
+      "index": 5,
+      "title": "Ratatouille mit Couscous",
+      "image": "images/ratatouillemitcouscous.jpg",
+      "url": "https://olimaol.github.io/rezepte/recipes/5.html"
+    }
   ]
 }
