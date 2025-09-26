@@ -320,7 +320,7 @@
   },
   {
     "title": "Thunfischreis",
-    "image": "",
+    "image": "thunfischreis.jpg",
     "ingredients": [
       "1 Zwiebel",
       "1 Knoblauchzehe",
@@ -336,7 +336,13 @@
       "0.5 TL Cayennepfeffer"
     ],
     "instructions": [
-      "Todo"
+      "Zwiebeln, Knoblauch klein schneiden, Paprika in Streifen.",
+      "Thunfisch in Essig, 0.5 EL Olivenöl, Hälfte des Knoblauchs, Salz, Pfeffer einlegen",
+      "Etwas Zitronenschale reiben, Zitronensaft auspressen.",
+      "Zwiebeln u. Knoblauch in Topf andünsten, nach wenigen Minuten Reis 2-3 min mit dünsten.",
+      "Gemüsebrühe dazu, 5 min kochen.",
+      "Erbsen, Paprika u. Kurkuma hinzu, 10 min kochen.",
+      "Thunfisch, Zitronenschale u. Zitronensaft hinzu. Mit Salz und Cayennepfeffer abschmecken, fertig."
     ]
   }
 ]
