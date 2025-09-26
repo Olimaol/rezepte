@@ -317,5 +317,26 @@
       "Tomaten, 2 TL Honig, Bohnen dazu und 30 min köcheln.",
       "Reis kochen, fertig."
     ]
+  },
+  {
+    "title": "Thunfischreis",
+    "image": "",
+    "ingredients": [
+      "1 Zwiebel",
+      "1 Knoblauchzehe",
+      "1 Paprikaschote (rot)",
+      "1 Zitrone (Bio)",
+      "125 g Erbsen (TK)",
+      "150 g Thunfisch",
+      "125 g Reis",
+      "1 EL Weißweinessig",
+      "1.5 EL Olivenöl",
+      "250 ml Gemüsebrühe",
+      "0.5 TL Kurkuma",
+      "0.5 TL Cayennepfeffer"
+    ],
+    "instructions": [
+      "Todo"
+    ]
   }
 ]
