@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../w3.css">
-    <title>One Pot Pasta mit Blattspinat (2)</title>
+    <title>Thunfischreis</title>
     <style>
         .recipe-container {
             max-width: 800px;
@@ -50,7 +50,7 @@
     <!-- Navbar -->
     <div class="w3-bar w3-teal">
         <a href="../index.html" class="w3-bar-item w3-button">Home</a>
-        <a href="../edit_recipes.html?index=0" class="w3-bar-item w3-button">Editor</a>
+        <a href="../edit_recipes.html?index=13" class="w3-bar-item w3-button">Editor</a>
         <a href="../weekplan.html" class="w3-bar-item w3-button">Wochenplan</a>
     </div>
 
@@ -59,8 +59,8 @@
         <div class="w3-card w3-white w3-round recipe-container">
             <!-- Recipe Header -->
             <div class="recipe-header">
-                <h1 id="recipe-name" itemprop="name">One Pot Pasta mit Blattspinat (2)</h1>
-                <img id="recipe-image" itemprop="image" src="../images/OnePotPastamitBlattspinat.jpg" alt="Recipe Image" class="recipe-image">
+                <h1 id="recipe-name" itemprop="name">Thunfischreis</h1>
+                <img id="recipe-image" itemprop="image" src="../images/" alt="Recipe Image" class="recipe-image">
 
                 <!-- Add to week plan -->
                 <div style="margin-top:10px;">
@@ -74,23 +74,29 @@
                 <h3>Zutaten</h3>
                 <ul id="recipe-ingredients" class="ingredients">
                     
-                    <li itemprop="recipeIngredient">250 g Nudeln</li>
-                    
-                    <li itemprop="recipeIngredient">250 g Blattspinat (TK)</li>
-                    
-                    <li itemprop="recipeIngredient">200 ml Sahne</li>
-                    
-                    <li itemprop="recipeIngredient">350 ml Gemüsebrühe</li>
-                    
-                    <li itemprop="recipeIngredient">Kräuter (italienisch)</li>
-                    
                     <li itemprop="recipeIngredient">1 Zwiebel</li>
                     
                     <li itemprop="recipeIngredient">1 Knoblauchzehe</li>
                     
-                    <li itemprop="recipeIngredient">50 g Parmesan</li>
+                    <li itemprop="recipeIngredient">1 Paprikaschote (rot)</li>
                     
-                    <li itemprop="recipeIngredient">2 EL Olivenöl</li>
+                    <li itemprop="recipeIngredient">1 Zitrone (Bio)</li>
+                    
+                    <li itemprop="recipeIngredient">125 g Erbsen (TK)</li>
+                    
+                    <li itemprop="recipeIngredient">150 g Thunfisch</li>
+                    
+                    <li itemprop="recipeIngredient">125 g Reis</li>
+                    
+                    <li itemprop="recipeIngredient">1 EL Weißweinessig</li>
+                    
+                    <li itemprop="recipeIngredient">1.5 EL Olivenöl</li>
+                    
+                    <li itemprop="recipeIngredient">250 ml Gemüsebrühe</li>
+                    
+                    <li itemprop="recipeIngredient">0.5 TL Kurkuma</li>
+                    
+                    <li itemprop="recipeIngredient">0.5 TL Cayennepfeffer</li>
                     
                 </ul>
                 <div data-bring-import style="display:none">
@@ -103,15 +109,7 @@
                 <h3>Zubereitung</h3>
                 <ol id="recipe-instructions" itemprop="recipeInstructions">
                     
-                    <li>Zwiebelwürfel und dann Knoblauch anbraten.</li>
-                    
-                    <li>Spinat, Nudeln, Gemüsebrühe und Sahne hinzufügen.</li>
-                    
-                    <li>Salzen, Pfeffern, Kräuter und Muskatnuss hinzufügen.</li>
-                    
-                    <li>Köcheln bis Nudeln gar sind.</li>
-                    
-                    <li>Parmesan hinzufügen, fertig.</li>
+                    <li>Todo</li>
                     
                 </ol>
             </div>
@@ -121,16 +119,16 @@
                 <h3>Nährwerte</h3>
                 
                 <ul>
-                    <li>Kalorien: 1663.18 kcal</li>
-                    <li>Fett: 117.51 g</li>
+                    <li>Kalorien: 773.16 kcal</li>
+                    <li>Fett: 23.09 g</li>
                     <ul>
-                        <li>gesättigte Fettsäuren: 58.68 g</li>
+                        <li>gesättigte Fettsäuren: 3.56 g</li>
                     </ul>
-                    <li>Kohlenhydrate: 115.14 g</li>
+                    <li>Kohlenhydrate: 85.88 g</li>
                     <ul>
-                        <li>Zucker: 14.88 g</li>
+                        <li>Zucker: 18.46 g</li>
                     </ul>
-                    <li>Eiweiß: 44.58 g</li>
+                    <li>Eiweiß: 58.18 g</li>
                 </ul>
                 
             </div>
@@ -164,11 +162,11 @@
 
         function getCurrentRecipeMeta(){
             // pulled from template variables
-            const idx = 0; // numeric index provided by Python generator
+            const idx = 13; // numeric index provided by Python generator
             // note: we keep the title escaping minimal here — your templating engine should output a safe value;
             // if you prefer, use a tojson filter in your template to inject a JS object safely.
-            const title = `One Pot Pasta mit Blattspinat (2)`;
-            const image = `images/OnePotPastamitBlattspinat.jpg`;
+            const title = `Thunfischreis`;
+            const image = `images/`;
             const url = window.location.href;
             return { index: idx, title: title, image: image, url: url };
         }
