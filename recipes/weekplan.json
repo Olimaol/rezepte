@@ -47,6 +47,18 @@
       "title": "Ratatouille mit Couscous",
       "image": "images/ratatouillemitcouscous.jpg",
       "url": "https://olimaol.github.io/rezepte/recipes/5.html"
+    },
+    {
+      "index": 12,
+      "title": "Weißer Riesenbohnentopf",
+      "image": "images/WeierRiesenbohnentopf.jpg",
+      "url": "https://olimaol.github.io/rezepte/recipes/12.html"
+    },
+    {
+      "index": 13,
+      "title": "Thunfischreis",
+      "image": "images/thunfischreis.jpg",
+      "url": "https://olimaol.github.io/rezepte/recipes/13.html"
     }
   ]
 }
