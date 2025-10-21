@@ -344,5 +344,29 @@
       "Erbsen, Paprika u. Kurkuma hinzu, 10 min kochen.",
       "Thunfisch, Zitronenschale u. Zitronensaft hinzu. Mit Salz und Cayennepfeffer abschmecken, fertig."
     ]
+  },
+  {
+    "title": "Ofenkürbis",
+    "image": "",
+    "ingredients": [
+      "1 Hokkaido",
+      "250 g weiße Bohnen",
+      "2 EL Olivenöl",
+      "4 EL Tomatenmark",
+      "1 Zwiebel",
+      "1 Knoblauchzehe",
+      "40 g Kürbiskerne",
+      "1 TL Rosmarin",
+      "1/2 TL Oregano",
+      "2 EL Ahornsirup",
+      "2 EL Zitronensaft"
+    ],
+    "instructions": [
+      "Zwiebel- und Knoblauchwürfel glasig braten.",
+      "Tomatenmark kurz mitdünsten.",
+      "Bohnen, etwas Wasser, Salz, und Pfeffer dazugeben und köcheln bis es in den Ofen geht.",
+      "Kürbisspalten und Kerne mit 2 EL Olivenöl, 2 EL Zitronensaft, 2 EL Ahornsirup, 1 TL Rosmarin, 1/2 TL Oregano, 1/4 TL Salz, 1/4 TL schwarzer Pfeffer vermengen und ab aufs Backblech.",
+      "Bohnenmix und Kürbis im Ofen bei 180°C Umluft 20-25 min backen. Fertig."
+    ]
   }
 ]
