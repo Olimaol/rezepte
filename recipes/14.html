@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../w3.css">
+    <title>Ofenkürbis</title>
+    <style>
+        .recipe-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .recipe-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .recipe-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .recipe-section {
+            margin-bottom: 20px;
+        }
+        .recipe-section h3 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+
+        /* Add-to-weekplan button */
+        .week-btn {
+            display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:6px; border:none; background:#27ae60; color:#fff; cursor:pointer;
+        }
+        .week-btn[disabled] { opacity:0.6; cursor:not-allowed; }
+
+        /* small link to open weekplan page */
+        .open-weekplan {
+            position:absolute; right:12px; top:12px; font-size:0.9rem; color:#fff; background:#00796b; padding:6px 8px; border-radius:6px; text-decoration:none;
+        }
+    </style>
+</head>
+<body class="w3-light-grey">
+
+    <!-- Navbar -->
+    <div class="w3-bar w3-teal">
+        <a href="../index.html" class="w3-bar-item w3-button">Home</a>
+        <a href="../edit_recipes.html?index=14" class="w3-bar-item w3-button">Editor</a>
+        <a href="../weekplan.html" class="w3-bar-item w3-button">Wochenplan</a>
+    </div>
+
+    <!-- Recipe Container -->
+    <div itemtype="http://schema.org/Recipe">
+        <div class="w3-card w3-white w3-round recipe-container">
+            <!-- Recipe Header -->
+            <div class="recipe-header">
+                <h1 id="recipe-name" itemprop="name">Ofenkürbis</h1>
+                <img id="recipe-image" itemprop="image" src="../images/" alt="Recipe Image" class="recipe-image">
+
+                <!-- Add to week plan -->
+                <div style="margin-top:10px;">
+                    <button id="add-to-week-btn" class="week-btn">➕ Zur Woche hinzufügen</button>
+                    <span id="add-feedback" style="margin-left:10px;color:#333;font-size:0.95rem;"></span>
+                </div>
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="recipe-section">
+                <h3>Zutaten</h3>
+                <ul id="recipe-ingredients" class="ingredients">
+                    
+                    <li itemprop="recipeIngredient">1 Hokkaido</li>
+                    
+                    <li itemprop="recipeIngredient">250 g weiße Bohnen</li>
+                    
+                    <li itemprop="recipeIngredient">2 EL Olivenöl</li>
+                    
+                    <li itemprop="recipeIngredient">4 EL Tomatenmark</li>
+                    
+                    <li itemprop="recipeIngredient">1 Zwiebel</li>
+                    
+                    <li itemprop="recipeIngredient">1 Knoblauchzehe</li>
+                    
+                    <li itemprop="recipeIngredient">40 g Kürbiskerne</li>
+                    
+                    <li itemprop="recipeIngredient">1 TL Rosmarin</li>
+                    
+                    <li itemprop="recipeIngredient">1/2 TL Oregano</li>
+                    
+                    <li itemprop="recipeIngredient">2 EL Ahornsirup</li>
+                    
+                    <li itemprop="recipeIngredient">2 EL Zitronensaft</li>
+                    
+                </ul>
+                <div data-bring-import style="display:none">
+                    <a href="https://www.getbring.com">Bring! Einkaufsliste App f&uuml;r iPhone und Android</a>
+                </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="recipe-section">
+                <h3>Zubereitung</h3>
+                <ol id="recipe-instructions" itemprop="recipeInstructions">
+                    
+                    <li>Zwiebel- und Knoblauchwürfel glasig braten.</li>
+                    
+                    <li>Tomatenmark kurz mitdünsten.</li>
+                    
+                    <li>Bohnen, etwas Wasser, Salz, und Pfeffer dazugeben und köcheln bis es in den Ofen geht.</li>
+                    
+                    <li>Kürbisspalten und Kerne mit 2 EL Olivenöl, 2 EL Zitronensaft, 2 EL Ahornsirup, 1 TL Rosmarin, 1/2 TL Oregano, 1/4 TL Salz, 1/4 TL schwarzer Pfeffer vermengen und ab aufs Backblech.</li>
+                    
+                    <li>Bohnenmix und Kürbis im Ofen bei 180°C Umluft 20-25 min backen. Fertig.</li>
+                    
+                </ol>
+            </div>
+
+            <!-- Nutritional Information Section -->
+            <div class="recipe-section">
+                <h3>Nährwerte</h3>
+                
+                <ul>
+                    <li>Kalorien: 949.09 kcal</li>
+                    <li>Fett: 36.22 g</li>
+                    <ul>
+                        <li>gesättigte Fettsäuren: 5.59 g</li>
+                    </ul>
+                    <li>Kohlenhydrate: 130.12 g</li>
+                    <ul>
+                        <li>Zucker: 33.02 g</li>
+                    </ul>
+                    <li>Eiweiß: 34.53 g</li>
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Week-plan client side helper
+    (function(){
+        const WEEKPLAN_KEY = 'weekPlan_v1'; // localStorage key
+
+        // utility: calculate ISO week-year key formatted like '2025-W33'
+        function getIsoWeekKey(date) {
+            const target = new Date(date.valueOf());
+            const dayNr = (date.getDay() + 6) % 7; // Monday=0, Sunday=6
+            target.setDate(target.getDate() - dayNr + 3);
+            const firstThursday = target.valueOf();
+            target.setMonth(0, 1);
+            if (target.getDay() !== 4) {
+                target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+            }
+            const weekNumber = 1 + Math.round((firstThursday - target) /  (7 * 24 * 3600 * 1000));
+            const year = new Date(date.getFullYear(), 0, 1).getFullYear();
+            return `${date.getFullYear()}-W${String(weekNumber).padStart(2,'0')}`;
+        }
+
+        function loadWeekPlan() {
+            try { return JSON.parse(localStorage.getItem(WEEKPLAN_KEY) || '{}'); } catch(e){ return {}; }
+        }
+        function saveWeekPlan(obj){ localStorage.setItem(WEEKPLAN_KEY, JSON.stringify(obj)); }
+
+        function getCurrentRecipeMeta(){
+            // pulled from template variables
+            const idx = 14; // numeric index provided by Python generator
+            // note: we keep the title escaping minimal here — your templating engine should output a safe value;
+            // if you prefer, use a tojson filter in your template to inject a JS object safely.
+            const title = `Ofenkürbis`;
+            const image = `images/`;
+            const url = window.location.href;
+            return { index: idx, title: title, image: image, url: url };
+        }
+
+        function addToCurrentWeek() {
+            const plan = loadWeekPlan();
+            const key = getIsoWeekKey(new Date());
+            plan[key] = plan[key] || [];
+            const meta = getCurrentRecipeMeta();
+            // avoid duplicates by index
+            if (plan[key].some(r => r.index === meta.index)) return { ok:false, msg:'Bereits in dieser Woche vorhanden' };
+            plan[key].push(meta);
+            saveWeekPlan(plan);
+            // dispatch storage event for same-tab listeners (some browsers won't trigger storage on same tab)
+            try { window.dispatchEvent(new Event('storage')); } catch(e){}
+            return { ok:true };
+        }
+
+        const btn = document.getElementById('add-to-week-btn');
+        const feedback = document.getElementById('add-feedback');
+        if (btn){
+            btn.addEventListener('click', ()=>{
+                const res = addToCurrentWeek();
+                if (res.ok){
+                    feedback.textContent = 'Zur aktuellen Woche hinzugefügt.';
+                    btn.disabled = true;
+                    setTimeout(()=>{ feedback.textContent=''; btn.disabled = false; }, 2000);
+                } else {
+                    feedback.textContent = res.msg || 'Nicht hinzugefügt.';
+                    setTimeout(()=> feedback.textContent = '', 2000);
+                }
+            });
+        }
+    })();
+    </script>
+
+    <script async="async" src="//platform.getbring.com/widgets/import.js"></script>
+</body>
+</html>
